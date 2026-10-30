@@ -4,21 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>Rogoźno Je - Co dzisiaj zamawiamy? | Lokalny agregator gastronomii</title>
-    <meta name="description" content="Zamawiaj jedzenie z lokalnych lokali w Rogoźnie bezpośrednio przez SMS bez prowizji i bez pośredników. Przeglądaj menu, kompletuj koszyk i generuj gotowe zamówienie w kilka sekund." />
+    <meta name="description" content="Zamawiaj jedzenie z lokalnych restauracji w Rogoźnie bezpośrednio przez SMS bez prowizji i bez pośredników. Przeglądaj menu, kompletuj koszyk i generuj gotowe zamówienie w kilka sekund." />
     
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://rogozno-je.pl/" />
     <meta property="og:title" content="Rogoźno Je - Co dzisiaj zamawiamy?" />
-    <meta property="og:description" content="Zamawiaj jedzenie z lokalnych restauracji w Rogoźnie bezpośrednio przez SMS bez prowizji i bez pośredników." />
+    <meta property="og:description" content="Lokalny agregator gastronomii dla miasta Rogoźno. Zamawiaj bez rejestracji i bez prowizji prosto przez SMS." />
     <meta property="og:image" content="./icon.svg" />
     <meta property="og:locale" content="pl_PL" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Rogoźno Je - Co dzisiaj zamawiamy?" />
-    <meta name="twitter:description" content="Lokalny agregator gastronomii dla miasta Rogoźno. Zamawiaj bez rejestracji i bez prowizji prosto przez SMS." />
-    <meta name="twitter:image" content="./icon.svg" />
 
     <link rel="icon" type="image/svg+xml" href="./icon.svg" />
 
@@ -27,57 +20,953 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-    <!-- GitHub Pages SPA redirect handler -->
+    <!-- Tailwind CSS CDN for instant, zero-build GitHub Pages deployment -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      (function(l) {
-        if (l.search[1] === '/' ) {
-          var decoded = l.search.slice(1).split('&').map(function(s) { 
-            return s.replace(/~and~/g, '&')
-          }).join('?');
-          window.history.replaceState(null, null,
-              l.pathname.slice(0, -1) + decoded + l.hash
-          );
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                50: '#fef2f2',
+                100: '#fee2e2',
+                700: '#b91c1c',
+                800: '#991b1b',
+                900: '#7f1d1d',
+              }
+            },
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            }
+          }
         }
-      }(window.location))
+      }
     </script>
 
-    <!-- Schema.org Structured Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "Rogoźno Je",
-      "alternateName": "Rogozno Je",
-      "url": "https://rogozno-je.pl",
-      "description": "Lokalny agregator gastronomii dla miasta Rogoźno, Wielkopolska. Zamawianie jedzenia przez SMS bez prowizji.",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://rogozno-je.pl/?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
-    }
-    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- Clear any legacy Service Worker or PWA cache in browser -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-          for (var reg of registrations) {
-            reg.unregister();
-          }
-        });
+    <style>
+      body {
+        font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+        background-color: #fbfbf9;
+        -webkit-tap-highlight-color: transparent;
       }
-      if ('caches' in window) {
-        caches.keys().then(function(names) {
-          for (var name of names) {
-            caches.delete(name);
-          }
-        });
-      }
-    </script>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      .pb-safe { padding-bottom: env(safe-area-inset-bottom, 1rem); }
+    </style>
   </head>
-  <body class="bg-[#fbfbf9] text-stone-900 font-sans antialiased selection:bg-red-700 selection:text-white min-h-screen">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+  <body class="text-stone-900 antialiased selection:bg-red-800 selection:text-white min-h-screen flex flex-col">
+    <div id="app" class="flex-1 flex flex-col"></div>
+
+    <!-- Application Script (Pure, robust, zero-build, 100% GitHub Pages native) -->
+    <script>
+      // 15 AUTHENTIC RESTAURANTS FROM ROGOŹNO CATALOG
+      const RESTAURANTS = [
+        {
+          id: 'rest-1',
+          name: 'Restauracja Dom Smaków',
+          slug: 'restauracja-dom-smakow',
+          desc: 'Kuchnia polska, pizza i dania obiadowe z dowozem na terenie Rogoźna.',
+          cuisines: ['Obiady', 'Pizza', 'Polska'],
+          phone: '723 200 344',
+          address: 'Fabryczna 7/J, Rogoźno',
+          minOrder: 35,
+          deliveryFee: 5,
+          time: '30-45 min',
+          hasDelivery: true,
+          hasTakeaway: true,
+          rating: 4.4,
+          reviews: 463,
+          hours: { mon: '12:00-21:00', tue: '12:00-21:00', wed: '12:00-21:00', thu: '12:00-21:00', fri: '12:00-23:00', sat: '12:00-23:00', sun: '12:00-20:00' },
+          menu: [
+            { id: 'm1-1', name: 'Kotlet Schabowy z Ziemniakami i Kapustą', desc: 'Duży schabowy smażony na złoto, tłuczone ziemniaki, zasmażana kapusta.', price: 32, cat: 'Obiady' },
+            { id: 'm1-2', name: 'Filet z Kurczaka w Ziołach', desc: 'Pierś z kurczaka z grilla, frytki, zestaw surówek.', price: 30, cat: 'Obiady' },
+            { id: 'm1-3', name: 'Pizza Dom Smaków (32 cm)', desc: 'Sos pomidorowy, ser mozzarella, szynka, pieczarki, kukurydza, papryka.', price: 34, cat: 'Pizza' },
+            { id: 'm1-4', name: 'Żurek Staropolski z jajkiem i kiełbasą', desc: 'Domowy zakwas, biała kiełbasa, majeranek, gotowane jajko.', price: 15, cat: 'Zupy' }
+          ]
+        },
+        {
+          id: 'rest-2',
+          name: 'Restauracja Kamienica',
+          slug: 'restauracja-kamienica',
+          desc: 'Kuchnia polska i europejska w sercu Rogoźna. Dania mięsne i steki.',
+          cuisines: ['Obiady', 'Polska', 'Europejska'],
+          phone: '668 301 584',
+          address: 'plac Powstańców Wlkp. 16, Rogoźno',
+          minOrder: 40,
+          deliveryFee: 0,
+          time: '25-35 min',
+          hasDelivery: false,
+          hasTakeaway: true,
+          rating: 4.6,
+          reviews: 264,
+          hours: { mon: 'Zamknięte', tue: '12:00-22:00', wed: '12:00-22:00', thu: '12:00-22:00', fri: '12:00-22:00', sat: '12:00-22:00', sun: '12:00-22:00' },
+          menu: [
+            { id: 'm2-1', name: 'Polędwiczki w Sosie Kurkowym', desc: 'Medaliony z polędwiczki w sosie ze świeżych kurek, kluski śląskie.', price: 44, cat: 'Dania Główne' },
+            { id: 'm2-2', name: 'Stek Wołowy z Masłem Czosnkowym', desc: 'Sezonowana wołowina, pieczone ziemniaczki, grillowane warzywa.', price: 59, cat: 'Dania Główne' },
+            { id: 'm2-3', name: 'Rosół z Kołdunami', desc: 'Długo gotowany bulion z ręcznie lepionymi kołdunkami.', price: 18, cat: 'Zupy' }
+          ]
+        },
+        {
+          id: 'rest-3',
+          name: 'Kultowa Bistro',
+          slug: 'kultowa-bistro',
+          desc: 'Burgery wołowe 100%, chrupiąca pizza neapolitańska i frytki belgijskie.',
+          cuisines: ['Burgery', 'Pizza', 'Bistro'],
+          phone: '723 715 712',
+          address: 'Wojska Polskiego 4, Rogoźno',
+          minOrder: 30,
+          deliveryFee: 5,
+          time: '30-45 min',
+          hasDelivery: true,
+          hasTakeaway: true,
+          rating: 4.6,
+          reviews: 49,
+          hours: { mon: '13:00-21:00', tue: '13:00-21:00', wed: '13:00-21:00', thu: '13:00-21:00', fri: '13:00-22:00', sat: '13:00-22:00', sun: '13:00-21:00' },
+          menu: [
+            { id: 'm3-1', name: 'Kultowy Burger Wołowy', desc: '100% wołowina 180g, cheddar, bekon, czerwona cebula, sos bistro.', price: 33, cat: 'Burgery' },
+            { id: 'm3-2', name: 'Jalapeño Burger Pikantny', desc: 'Wołowina 180g, papryczki jalapeño, ser gouda, sos chipotle.', price: 35, cat: 'Burgery' },
+            { id: 'm3-3', name: 'Pizza Neapolitańska Margherita', desc: 'Sos San Marzano, mozzarella fior di latte, świeża bazylia.', price: 29, cat: 'Pizza' },
+            { id: 'm3-4', name: 'Frytki Belgijskie z Sosem', desc: 'Grube, chrupiące frytki z solą morską.', price: 15, cat: 'Dodatki' }
+          ]
+        },
+        {
+          id: 'rest-4',
+          name: 'Wiosło i widelec (Komsport)',
+          slug: 'wioslo-i-widelec',
+          desc: 'Restauracja nad jeziorem. Świeże smażone ryby z jeziora i dania obiadowe.',
+          cuisines: ['Obiady', 'Ryby', 'Polska'],
+          phone: '785 002 513',
+          address: 'Za Jeziorem 40, Rogoźno',
+          minOrder: 40,
+          deliveryFee: 6,
+          time: '35-50 min',
+          hasDelivery: true,
+          hasTakeaway: true,
+          rating: 4.4,
+          reviews: 22,
+          hours: { mon: '12:00-20:00', tue: '12:00-20:00', wed: '12:00-20:00', thu: '12:00-20:00', fri: '12:00-21:00', sat: '12:00-21:00', sun: '12:00-20:00' },
+          menu: [
+            { id: 'm4-1', name: 'Smażony Sandacz z Jeziora Rogoźno', desc: 'Świeży filet smażony na maśle, frytki, surówka z białej kapusty.', price: 46, cat: 'Ryby' },
+            { id: 'm4-2', name: 'Pstrąg z Pieca z Ziołami', desc: 'Cały pstrąg pieczony z masłem czosnkowym i cytryną.', price: 42, cat: 'Ryby' }
+          ]
+        },
+        {
+          id: 'rest-5',
+          name: 'Magnolia Przyjęcia w Rogoźnie',
+          slug: 'magnolia-przyjecia',
+          desc: 'Restauracja i kawiarnia przy rynku. Domowe obiady, desery i kawa.',
+          cuisines: ['Obiady', 'Kawiarnie', 'Desery'],
+          phone: '600 825 627',
+          address: 'plac Marcinkowskiego 8, Rogoźno',
+          minOrder: 35,
+          deliveryFee: 5,
+          time: '30-40 min',
+          hasDelivery: true,
+          hasTakeaway: true,
+          rating: 4.7,
+          reviews: 205,
+          hours: { mon: '11:00-19:00', tue: '11:00-19:00', wed: '11:00-19:00', thu: '11:00-19:00', fri: '11:00-20:00', sat: '11:00-20:00', sun: '11:00-19:00' },
+          menu: [
+            { id: 'm5-1', name: 'Domowy Obiad Dnia Magnolia', desc: 'Drugie danie mięsne, ziemniaki, zestaw 3 surówek.', price: 29, cat: 'Obiady' },
+            { id: 'm5-2', name: 'Sernik Królewski z Czekoladą', desc: 'Puszysty sernik domowy na kruchym kakaowym spodzie.', price: 14, cat: 'Desery' }
+          ]
+        },
+        {
+          id: 'rest-6',
+          name: 'Pizzeria Kociak',
+          slug: 'pizzeria-kociak',
+          desc: 'Najpopularniejsza pizzeria w Rogoźnie. Ponad 650 opinii! Obfita pizza z serem.',
+          cuisines: ['Pizza', 'Fast Food'],
+          phone: '511 611 698',
+          address: 'osiedle Przemysława II 3a, Rogoźno',
+          minOrder: 35,
+          deliveryFee: 5,
+          time: '30-45 min',
+          hasDelivery: true,
+          hasTakeaway: true,
+          rating: 4.2,
+          reviews: 654,
+          hours: { mon: 'Zamknięte', tue: '13:00-21:00', wed: '13:00-21:00', thu: '13:00-21:00', fri: '13:00-23:00', sat: '13:00-23:00', sun: '13:00-21:00' },
+          menu: [
+            { id: 'm6-1', name: 'Pizza Kociak Specjalna (32 cm)', desc: 'Sos pomidorowy, podwójny ser, szynka, salami, pieczarki, czosnek.', price: 36, cat: 'Pizza' },
+            { id: 'm6-2', name: 'Pizza Capricciosa (32 cm)', desc: 'Sos pomidorowy, ser mozzarella, szynka, pieczarki.', price: 32, cat: 'Pizza' },
+            { id: 'm6-3', name: 'Sos Czosnkowy Kociak Firmowy', desc: 'Gęsty, autorski kremowy sos czosnkowy.', price: 4, cat: 'Dodatki' }
+          ]
+        },
+        {
+          id: 'rest-7',
+          name: 'Pizza-Hit',
+          slug: 'pizza-hit',
+          desc: 'Pizzeria i dania obiadowe. Pizze, gyros i frytki.',
+          cuisines: ['Pizza', 'Obiady'],
+          phone: '67 268 40 15',
+          address: 'Reja 28, Rogoźno',
+          minOrder: 35,
+          deliveryFee: 5,
+          time: '35-50 min',
+          hasDelivery: true,
+          hasTakeaway: true,
+          rating: 3.6,
+          reviews: 474,
+          hours: { mon: '12:00-21:00', tue: '12:00-21:00', wed: '12:00-21:00', thu: '12:00-21:00', fri: '12:00-23:00', sat: '12:00-23:00', sun: '12:00-21:00' },
+          menu: [
+            { id: 'm7-1', name: 'Pizza Gyros Hit (32 cm)', desc: 'Sos pomidorowy, mozzarella, mięso gyros, czerwona cebulka.', price: 35, cat: 'Pizza' },
+            { id: 'm7-2', name: 'Talerz Gyros z Frytkami', desc: 'Porcja pieczonego mięsa gyros, frytki, surówka, sos.', price: 31, cat: 'Obiady' }
+          ]
+        },
+        {
+          id: 'rest-8',
+          name: 'Bar U Piotra',
+          slug: 'bar-u-piotra',
+          desc: 'Tradycyjne polskie obiady domowe, schabowy, mielony i pierogi.',
+          cuisines: ['Obiady', 'Polska', 'Pierogi'],
+          phone: '509 014 363',
+          address: 'osiedle Przemysława II 3B, Rogoźno',
+          minOrder: 25,
+          deliveryFee: 4,
+          time: '20-35 min',
+          hasDelivery: true,
+          hasTakeaway: true,
+          rating: 4.6,
+          reviews: 65,
+          hours: { mon: '12:00-18:00', tue: '12:00-18:00', wed: '12:00-18:00', thu: '12:00-18:00', fri: '12:00-18:00', sat: '12:00-18:00', sun: '12:00-18:00' },
+          menu: [
+            { id: 'm8-1', name: 'Kotlet Mielony z Buraczkami', desc: 'Kotlet mielony, ziemniaki z koperkiem, zasmażane buraczki.', price: 27, cat: 'Obiady' },
+            { id: 'm8-2', name: 'Pierogi Ruskie ze Skwarkami (8 szt.)', desc: 'Ręcznie lepione z twarogiem i ziemniakami.', price: 22, cat: 'Pierogi' }
+          ]
+        },
+        {
+          id: 'rest-9',
+          name: 'Bistro Raphael',
+          slug: 'bistro-raphael',
+          desc: 'Naleśniki, pierogi i domowe obiady dnia.',
+          cuisines: ['Bistro', 'Obiady', 'Pierogi'],
+          phone: '795 708 707',
+          address: 'Wojska Polskiego 46, Rogoźno',
+          minOrder: 25,
+          deliveryFee: 0,
+          time: '20-30 min',
+          hasDelivery: false,
+          hasTakeaway: true,
+          rating: 4.4,
+          reviews: 53,
+          hours: { mon: 'Zamknięte', tue: '13:00-19:00', wed: '13:00-19:00', thu: '13:00-19:00', fri: '13:00-19:00', sat: '13:00-19:00', sun: 'Zamknięte' },
+          menu: [
+            { id: 'm9-1', name: 'Naleśniki ze Słodkim Twarogiem', desc: 'Dwa puszyste naleśniki z twarogiem i owocami.', price: 21, cat: 'Obiady' },
+            { id: 'm9-2', name: 'Kotlet De Volaille', desc: 'Pierś drobiowa z masełkiem ziołowym, frytki, surówka.', price: 29, cat: 'Obiady' }
+          ]
+        },
+        {
+          id: 'rest-10',
+          name: 'Chicken Bar',
+          slug: 'chicken-bar',
+          desc: 'Chrupiący kurczak z rożna, złociste stripsy i soczyste burgery. Ocena 4.9!',
+          cuisines: ['Kurczak', 'Burgery', 'Fast Food'],
+          phone: '697 430 276',
+          address: 'ul. Kościuszki, Rogoźno',
+          minOrder: 30,
+          deliveryFee: 0,
+          time: '20-35 min',
+          hasDelivery: false,
+          hasTakeaway: true,
+          rating: 4.9,
+          reviews: 103,
+          hours: { mon: 'Zamknięte', tue: '12:00-21:00', wed: '12:00-21:00', thu: '12:00-21:00', fri: '12:00-23:00', sat: '12:00-23:00', sun: '12:00-20:00' },
+          menu: [
+            { id: 'm10-1', name: 'Kubełek Stripsów Chrupiących (10 szt.)', desc: 'Polędwiczki z piersi kurczaka w złocistej panierce z sosami.', price: 34, cat: 'Kurczak' },
+            { id: 'm10-2', name: 'Połówka Kurczaka z Rożna z Frytkami', desc: 'Pieczony kurczak ze złocistą skórką, porcja frytek.', price: 28, cat: 'Kurczak' },
+            { id: 'm10-3', name: 'Crispy Chicken Burger', desc: 'Chrupiący kurczak w bułce sezamowej, sałata, majonez.', price: 22, cat: 'Burgery' }
+          ]
+        },
+        {
+          id: 'rest-11',
+          name: 'Zapiekanki Rogoźno',
+          slug: 'zapiekanki-rogozno',
+          desc: 'Kultowe zapiekanki z pieca na rogozińskim Rynku. Świeże pieczarki i ser. Ocena 4.9!',
+          cuisines: ['Fast Food', 'Street Food'],
+          phone: '451 003 112',
+          address: 'Plac Karola Marcinkowskiego, Rogoźno',
+          minOrder: 20,
+          deliveryFee: 0,
+          time: '15-25 min',
+          hasDelivery: false,
+          hasTakeaway: true,
+          rating: 4.9,
+          reviews: 289,
+          hours: { mon: '12:00-20:00', tue: '12:00-20:00', wed: '12:00-20:00', thu: '12:00-20:00', fri: '12:00-20:00', sat: '12:00-20:00', sun: '12:00-20:00' },
+          menu: [
+            { id: 'm11-1', name: 'Zapiekanka Tradycyjna z Pieczarkami (45 cm)', desc: 'Bagietka, duszony farsz pieczarkowy, ser gouda, ketchup.', price: 18, cat: 'Zapiekanki' },
+            { id: 'm11-2', name: 'Zapiekanka Góralska ze Szynką i Żurawiną', desc: 'Pieczarki, ser, wędzona szynka, oscypek, żurawina.', price: 22, cat: 'Zapiekanki' }
+          ]
+        },
+        {
+          id: 'rest-12',
+          name: 'Shoarma Szejka',
+          slug: 'shoarma-szejka',
+          desc: 'Orientalna shoarma i kebab z pieczonym mięsem. Ocena 4.8!',
+          cuisines: ['Kebab', 'Fast Food'],
+          phone: '459 179 393',
+          address: 'osiedle Przemysława II 7d, Rogoźno',
+          minOrder: 25,
+          deliveryFee: 0,
+          time: '20-30 min',
+          hasDelivery: false,
+          hasTakeaway: true,
+          rating: 4.8,
+          reviews: 36,
+          hours: { mon: '09:00-19:00', tue: '12:00-19:00', wed: '12:00-19:00', thu: '12:00-19:00', fri: '12:00-20:00', sat: '12:00-20:00', sun: 'Zamknięte' },
+          menu: [
+            { id: 'm12-1', name: 'Talerz Shoarma Szejka', desc: 'Marynowane mięso z rożna, frytki lub ryż, surówki, sos arabski.', price: 33, cat: 'Kebab' },
+            { id: 'm12-2', name: 'Shoarma w Chlebku Arabskim', desc: 'Ciepły arabski chlebek, mięso, warzywa, sos czosnkowy.', price: 24, cat: 'Kebab' }
+          ]
+        },
+        {
+          id: 'rest-13',
+          name: 'Saray Kebab Rogoźno',
+          slug: 'saray-kebab',
+          desc: 'Kebab z dowozem. Kapsalony, rollo lawasz i zestawy z frytkami.',
+          cuisines: ['Kebab', 'Fast Food'],
+          phone: '730 997 062',
+          address: 'osiedle Przemysława II 2, Rogoźno',
+          minOrder: 25,
+          deliveryFee: 5,
+          time: '25-40 min',
+          hasDelivery: true,
+          hasTakeaway: true,
+          rating: 4.3,
+          reviews: 69,
+          hours: { mon: 'Zamknięte', tue: '11:00-22:00', wed: '11:00-22:00', thu: '11:00-22:00', fri: '11:00-23:00', sat: '11:00-23:00', sun: '12:00-22:00' },
+          menu: [
+            { id: 'm13-1', name: 'Kebab Rollo Saray (Duży)', desc: 'Chleb lawasz, opiekane mięso, warzywa, sos mieszany.', price: 26, cat: 'Kebab' },
+            { id: 'm13-2', name: 'Kapsalon Saray z Serem Gouda', desc: 'Frytki, mięso kebab, stopiony ser gouda, surówka, sos czosnkowy.', price: 32, cat: 'Kebab' }
+          ]
+        },
+        {
+          id: 'rest-14',
+          name: 'Fast Kebab',
+          slug: 'fast-kebab',
+          desc: 'Kebab w centrum Rogoźna, otwarty do późna w nocy. Ponad 380 opinii.',
+          cuisines: ['Kebab', 'Fast Food'],
+          phone: '577 799 677',
+          address: 'Wielka Poznańska 28, Rogoźno',
+          minOrder: 25,
+          deliveryFee: 0,
+          time: '15-25 min',
+          hasDelivery: false,
+          hasTakeaway: true,
+          rating: 4.1,
+          reviews: 388,
+          hours: { mon: '10:00-24:00', tue: '10:00-24:00', wed: '10:00-24:00', thu: '10:00-24:00', fri: '10:00-01:00', sat: '10:00-01:00', sun: '10:00-24:00' },
+          menu: [
+            { id: 'm14-1', name: 'Fast Kebab w Chrupkiej Picie', desc: 'Mięso kebab, kapusta pekińska, pomidor, ogórek, sos.', price: 23, cat: 'Kebab' },
+            { id: 'm14-2', name: 'Mega Kebab Rollo Gigant', desc: 'Ponad 50 cm rollo z podwójną porcją mięsa.', price: 34, cat: 'Kebab' }
+          ]
+        },
+        {
+          id: 'rest-15',
+          name: 'MAYBEST KEBAB & BURGER',
+          slug: 'maybest-kebab-burger',
+          desc: 'Kebab i burgery z dowozem oraz Drive-thru przy ul. Kościuszki.',
+          cuisines: ['Kebab', 'Burgery', 'Fast Food'],
+          phone: '885 574 423',
+          address: 'Kościuszki 49a, Rogoźno',
+          minOrder: 30,
+          deliveryFee: 5,
+          time: '25-40 min',
+          hasDelivery: true,
+          hasTakeaway: true,
+          rating: 3.7,
+          reviews: 166,
+          hours: { mon: '10:00-22:00', tue: '10:00-22:00', wed: '10:00-22:00', thu: '10:00-22:00', fri: '10:00-22:00', sat: '10:00-22:00', sun: '10:00-22:00' },
+          menu: [
+            { id: 'm15-1', name: 'Maybest Kebab w Bułce z Serem', desc: 'Mięso kebab, cheddar, warzywa, sos czosnkowy i ostry.', price: 26, cat: 'Kebab' },
+            { id: 'm15-2', name: 'Maybest Burger Wołowy z Bekonem', desc: 'Wołowina 150g, bekon, sałata, pomidor, sos BBQ.', price: 29, cat: 'Burgery' },
+            { id: 'm15-3', name: 'Kapsalon Maybest', desc: 'Zapiekane frytki z mięsem kebab i serem gouda.', price: 31, cat: 'Kebab' }
+          ]
+        }
+      ];
+
+      // STATE
+      let cart = JSON.parse(localStorage.getItem('rogozno_cart_v1') || '[]');
+      let cartRestId = localStorage.getItem('rogozno_cart_rest_v1') || null;
+      let activeRestaurant = null;
+      let searchQuery = '';
+      let activeCategory = 'Wszystkie';
+      let filterOpen = false;
+      let filterDelivery = false;
+      let filterTakeaway = false;
+      let isCartOpen = false;
+      let orderModalData = null;
+
+      function saveCart() {
+        localStorage.setItem('rogozno_cart_v1', JSON.stringify(cart));
+        localStorage.setItem('rogozno_cart_rest_v1', cartRestId || '');
+      }
+
+      function removeDiacritics(text) {
+        const map = { 'ą':'a','ć':'c','ę':'e','ł':'l','ń':'n','ó':'o','ś':'s','ź':'z','ż':'z','Ą':'A','Ć':'C','Ę':'E','Ł':'L','Ń':'N','Ó':'O','Ś':'S','Ź':'Z','Ż':'Z' };
+        return text.replace(/[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/g, c => map[c] || c);
+      }
+
+      // RENDER MAIN APPLICATION
+      function render() {
+        const app = document.getElementById('app');
+        if (!app) return;
+
+        const currentRest = RESTAURANTS.find(r => r.id === cartRestId);
+        const totalItemsCount = cart.reduce((s, i) => s + i.qty, 0);
+        const totalItemsPrice = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+
+        app.innerHTML = `
+          <!-- Header (Fluid flex-row, zero wrapping, 100% clean) -->
+          <header class="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-2xs">
+            <div class="max-w-6xl mx-auto px-4 h-14 sm:h-16 flex flex-row items-center justify-between gap-2">
+              <button onclick="goHome()" class="flex flex-row items-center gap-2 text-left shrink-0">
+                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-red-700 to-red-900 flex items-center justify-center text-white shadow-xs">
+                  <i data-lucide="utensils" class="w-4 h-4"></i>
+                </div>
+                <span class="font-extrabold text-base sm:text-lg text-red-900 tracking-tight whitespace-nowrap">Rogoźno Je</span>
+              </button>
+
+              <div class="flex flex-row items-center gap-2">
+                ${totalItemsCount > 0 ? `
+                  <button onclick="openCart()" class="flex flex-row items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-800 hover:bg-red-900 text-white font-bold text-xs shadow-xs active:scale-95 transition">
+                    <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+                    <span>${totalItemsCount}</span>
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+          </header>
+
+          <!-- Main View -->
+          <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 pt-4 pb-24">
+            ${activeRestaurant ? renderRestaurantProfile(activeRestaurant) : renderHome()}
+          </main>
+
+          <!-- Sticky Mobile Cart Bar -->
+          ${totalItemsCount > 0 && !isCartOpen ? `
+            <div class="fixed bottom-0 left-0 right-0 z-30 p-3 sm:p-4 bg-gradient-to-t from-white via-white/95 to-transparent backdrop-blur-md pb-safe">
+              <div class="max-w-md mx-auto">
+                <button onclick="openCart()" class="w-full py-3.5 px-5 rounded-2xl bg-red-800 hover:bg-red-900 active:scale-[0.98] text-white font-extrabold text-sm flex items-center justify-between shadow-xl shadow-red-900/30 transition border border-red-700/50">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-6 h-6 rounded-full bg-white text-red-900 font-black flex items-center justify-center text-xs">
+                      ${totalItemsCount}
+                    </div>
+                    <span class="truncate max-w-[180px]">${currentRest ? currentRest.name : 'Koszyk'}</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="font-black">${totalItemsPrice} zł</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                  </div>
+                </button>
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Cart Drawer Modal -->
+          ${isCartOpen ? renderCartDrawer(currentRest, totalItemsPrice) : ''}
+
+          <!-- Order SMS Confirmation Modal -->
+          ${orderModalData ? renderOrderModal() : ''}
+
+          <!-- Footer -->
+          <footer class="mt-auto border-t border-stone-200 bg-white py-6 text-center text-xs text-stone-500">
+            <p class="font-bold text-stone-700">Rogoźno Je · Agregator Gastronomii</p>
+            <p class="text-[11px] text-stone-400 mt-1">Zamówienia SMS wysyłane bezpośrednio z telefonu klienta (0 zł prowizji dla lokalu i klienta).</p>
+          </footer>
+        `;
+
+        lucide.createIcons();
+      }
+
+      function renderHome() {
+        // Filter logic
+        const query = searchQuery.trim().toLowerCase();
+        const filtered = RESTAURANTS.filter(r => {
+          if (filterDelivery && !r.hasDelivery) return false;
+          if (filterTakeaway && !r.hasTakeaway) return false;
+          if (activeCategory !== 'Wszystkie') {
+            const hasCat = r.cuisines.some(c => c.toLowerCase().includes(activeCategory.toLowerCase())) ||
+                           r.menu.some(m => m.cat && m.cat.toLowerCase().includes(activeCategory.toLowerCase()));
+            if (!hasCat) return false;
+          }
+          if (query) {
+            const matchName = r.name.toLowerCase().includes(query);
+            const matchCuisine = r.cuisines.some(c => c.toLowerCase().includes(query));
+            const matchDish = r.menu.some(m => m.name.toLowerCase().includes(query) || m.desc.toLowerCase().includes(query));
+            if (!matchName && !matchCuisine && !matchDish) return false;
+          }
+          return true;
+        });
+
+        const categories = [
+          { name: 'Wszystkie', icon: '🍽️' },
+          { name: 'Burgery', icon: '🍔' },
+          { name: 'Pizza', icon: '🍕' },
+          { name: 'Kebab', icon: '🥙' },
+          { name: 'Obiady', icon: '🍲' },
+          { name: 'Pierogi', icon: '🥟' },
+          { name: 'Kurczak', icon: '🍗' },
+          { name: 'Zapiekanki', icon: '🥖' },
+          { name: 'Desery', icon: '🍰' }
+        ];
+
+        return `
+          <div class="space-y-5">
+            <!-- Mobile Hero Banner -->
+            <div class="relative bg-gradient-to-br from-red-900 via-stone-900 to-red-950 text-white rounded-2xl p-5 shadow-sm overflow-hidden">
+              <span class="inline-block px-2.5 py-0.5 rounded-full bg-white/10 text-red-200 text-[11px] font-semibold mb-1.5">
+                Rogoźno (64-610) · Zamawiaj SMS-em 0 zł
+              </span>
+              <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight">Co dzisiaj zamawiamy?</h1>
+              <p class="text-xs text-stone-300 mt-1 max-w-md">15 lokalnych lokali w Rogoźnie. Skompletuj zamówienie i wyślij gotowy SMS prosto ze swojego telefonu.</p>
+            </div>
+
+            <!-- Search bar -->
+            <div class="relative flex items-center">
+              <i data-lucide="search" class="absolute left-3.5 w-4 h-4 text-stone-400 pointer-events-none"></i>
+              <input
+                type="text"
+                value="${searchQuery}"
+                oninput="setSearch(this.value)"
+                placeholder="Szukaj restauracji lub dania (np. burger, schabowy, pizza)..."
+                class="w-full pl-10 pr-4 py-3 rounded-2xl bg-white border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-red-800/20 focus:border-red-800"
+              />
+            </div>
+
+            <!-- Quick Filter Chips -->
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 -mx-4 px-4 sm:mx-0 sm:px-0">
+              <button onclick="toggleFilterDelivery()" class="px-3.5 py-1.5 rounded-xl border text-xs font-semibold shrink-0 transition active:scale-95 ${filterDelivery ? 'bg-red-800 text-white border-red-800' : 'bg-white text-stone-700 border-stone-200'}">
+                🚗 Dowóz
+              </button>
+              <button onclick="toggleFilterTakeaway()" class="px-3.5 py-1.5 rounded-xl border text-xs font-semibold shrink-0 transition active:scale-95 ${filterTakeaway ? 'bg-red-800 text-white border-red-800' : 'bg-white text-stone-700 border-stone-200'}">
+                🛍 Odbiór
+              </button>
+            </div>
+
+            <!-- Category Pills Bar -->
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+              ${categories.map(c => `
+                <button onclick="setCategory('${c.name}')" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold shrink-0 transition active:scale-95 ${activeCategory === c.name ? 'bg-stone-900 text-white shadow-sm' : 'bg-white text-stone-700 border border-stone-200'}">
+                  <span>${c.icon}</span>
+                  <span>${c.name}</span>
+                </button>
+              `).join('')}
+            </div>
+
+            <!-- Restaurant List -->
+            <div class="space-y-3">
+              <div class="flex items-center justify-between text-xs font-bold text-stone-500 uppercase tracking-wider">
+                <span>Restauracje w Rogoźnie (${filtered.length})</span>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                ${filtered.map(r => `
+                  <div onclick="openRestaurant('${r.id}')" class="bg-white rounded-2xl p-4 border border-stone-200 shadow-2xs hover:shadow-md active:scale-[0.99] transition cursor-pointer flex flex-col justify-between">
+                    <div>
+                      <div class="flex items-start justify-between gap-2">
+                        <h3 class="font-extrabold text-base text-stone-900">${r.name}</h3>
+                        <span class="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold shrink-0">
+                          ⭐ ${r.rating} <span class="text-[10px] text-stone-500 font-normal">(${r.reviews})</span>
+                        </span>
+                      </div>
+
+                      <p class="text-xs text-stone-500 mt-1 line-clamp-1">${r.cuisines.join(' · ')} · ${r.address}</p>
+                      <p class="text-xs text-stone-600 mt-2 line-clamp-2">${r.desc}</p>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between text-xs">
+                      <div class="flex items-center gap-2 text-stone-600 font-medium">
+                        ${r.hasDelivery ? `<span>🚗 Dowóz (${r.deliveryFee} zł)</span>` : ''}
+                        ${r.hasTakeaway ? `<span>🛍 Odbiór</span>` : ''}
+                      </div>
+                      <span class="text-red-900 font-bold flex items-center gap-1">
+                        Menu <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                      </span>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderRestaurantProfile(rest) {
+        return `
+          <div class="space-y-6">
+            <div class="flex items-center justify-between">
+              <button onclick="goHome()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-stone-200 text-xs font-bold text-stone-700 hover:bg-stone-50">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                <span>Wróć do listy</span>
+              </button>
+              <a href="tel:${rest.phone.replace(/[^0-9+]/g, '')}" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-red-800 text-white text-xs font-bold shadow-xs">
+                <i data-lucide="phone" class="w-3.5 h-3.5"></i>
+                <span>Zadzwoń: ${rest.phone}</span>
+              </a>
+            </div>
+
+            <!-- Profile Card -->
+            <div class="bg-white rounded-3xl p-5 sm:p-6 border border-stone-200 shadow-sm space-y-3">
+              <div class="flex items-start justify-between gap-3 flex-wrap">
+                <div>
+                  <h1 class="text-xl sm:text-2xl font-black text-stone-900">${rest.name}</h1>
+                  <p class="text-xs text-stone-500 mt-0.5">${rest.address}</p>
+                </div>
+                <span class="px-2.5 py-1 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold">
+                  ⭐ ${rest.rating} (${rest.reviews} opinii Google)
+                </span>
+              </div>
+              <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">${rest.desc}</p>
+              
+              <div class="pt-2 border-t border-stone-100 flex items-center gap-4 text-xs font-medium text-stone-600">
+                <span>Min. zamówienie: <strong class="text-stone-900">${rest.minOrder} zł</strong></span>
+                <span>Dostawa: <strong class="text-stone-900">${rest.hasDelivery ? rest.deliveryFee + ' zł' : 'Brak dowozu'}</strong></span>
+              </div>
+            </div>
+
+            <!-- Menu items -->
+            <div class="space-y-4">
+              <h2 class="text-base font-extrabold text-stone-900 uppercase tracking-wider text-xs">Dania w menu</h2>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                ${rest.menu.map(item => {
+                  const inCart = cart.find(c => c.id === item.id);
+                  const qty = inCart ? inCart.qty : 0;
+                  return `
+                    <div class="bg-white rounded-2xl p-4 border border-stone-200/90 shadow-2xs flex flex-col justify-between">
+                      <div>
+                        <h4 class="font-bold text-sm sm:text-base text-stone-900">${item.name}</h4>
+                        <p class="text-xs text-stone-500 mt-1 leading-relaxed">${item.desc}</p>
+                      </div>
+
+                      <div class="mt-4 pt-2.5 border-t border-stone-100 flex items-center justify-between">
+                        <span class="text-base font-black text-stone-900">${item.price} zł</span>
+
+                        ${qty > 0 ? `
+                          <!-- Wolt/Glovo Stepper -->
+                          <div class="flex items-center bg-red-50 border border-red-200 rounded-xl overflow-hidden">
+                            <button onclick="updateQty('${item.id}', -1)" class="w-8 h-8 flex items-center justify-center text-red-900 font-bold active:scale-90">-</button>
+                            <span class="w-6 text-center text-xs font-black text-red-900">${qty}</span>
+                            <button onclick="updateQty('${item.id}', 1)" class="w-8 h-8 flex items-center justify-center bg-red-800 text-white font-bold active:scale-90">+</button>
+                          </div>
+                        ` : `
+                          <button onclick="addToCart('${rest.id}', '${item.id}', '${item.name}', ${item.price})" class="px-4 py-1.5 rounded-xl bg-red-800 hover:bg-red-900 text-white text-xs font-bold active:scale-95 shadow-2xs transition">
+                            + DODAJ
+                          </button>
+                        `}
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderCartDrawer(rest, totalItemsPrice) {
+        const deliveryFee = rest && rest.hasDelivery ? rest.deliveryFee : 0;
+        const finalPrice = totalItemsPrice + deliveryFee;
+
+        return `
+          <div class="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-xs">
+            <div class="w-full max-w-md bg-white h-full flex flex-col shadow-2xl text-stone-900 overflow-hidden">
+              <!-- Top bar -->
+              <div class="w-10 h-1 bg-stone-300 rounded-full mx-auto my-2"></div>
+              <div class="p-4 border-b border-stone-100 flex items-center justify-between bg-stone-50">
+                <div>
+                  <h3 class="font-extrabold text-base text-stone-900">Twój koszyk</h3>
+                  <p class="text-xs text-stone-500">${rest ? rest.name : ''}</p>
+                </div>
+                <button onclick="closeCart()" class="p-2 text-stone-400 hover:text-stone-700">
+                  <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+              </div>
+
+              <!-- Cart items -->
+              <div class="flex-1 overflow-y-auto p-4 space-y-4">
+                <div class="space-y-2">
+                  ${cart.map(i => `
+                    <div class="flex items-center justify-between p-2.5 bg-stone-50 rounded-xl border border-stone-200/70 text-xs">
+                      <div class="flex-1 pr-2">
+                        <p class="font-bold text-stone-900">${i.name}</p>
+                        <p class="text-stone-500">${i.price} zł / szt.</p>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <button onclick="updateQty('${i.id}', -1)" class="w-6 h-6 rounded bg-stone-200 text-stone-800 font-bold">-</button>
+                        <span class="font-bold w-4 text-center">${i.qty}</span>
+                        <button onclick="updateQty('${i.id}', 1)" class="w-6 h-6 rounded bg-red-800 text-white font-bold">+</button>
+                        <span class="w-12 text-right font-black">${i.price * i.qty} zł</span>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+
+                <!-- Form -->
+                <div class="pt-3 border-t border-stone-200 space-y-3">
+                  <h4 class="text-xs font-bold uppercase tracking-wider text-stone-700">Dane do zamówienia SMS</h4>
+                  <div>
+                    <label class="block text-xs font-medium text-stone-600 mb-1">Twoje imię *</label>
+                    <input id="cust-name" type="text" placeholder="np. Jan" class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs focus:outline-none focus:border-red-800" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-stone-600 mb-1">Numer telefonu *</label>
+                    <input id="cust-phone" type="tel" placeholder="np. 500 123 456" class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs focus:outline-none focus:border-red-800" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-stone-600 mb-1">Ulica i numer w Rogoźnie *</label>
+                    <input id="cust-address" type="text" placeholder="np. Wielka Poznańska 15/2" class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs focus:outline-none focus:border-red-800" />
+                    <!-- Quick Rogoźno Street chips -->
+                    <div class="mt-1.5 flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5">
+                      ${['Wielka Poznańska', 'Czarnkowska', 'Kościuszki', 'Nowa', 'Pl. Marcinkowskiego', 'Kotlarska'].map(st => `
+                        <button type="button" onclick="setStreetInput('${st}')" class="px-2 py-0.5 bg-stone-100 hover:bg-red-50 text-[10px] text-stone-600 rounded-lg shrink-0 font-medium">${st}</button>
+                      `).join('')}
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-stone-600 mb-1">Uwagi (opcjonalnie)</label>
+                    <input id="cust-notes" type="text" placeholder="np. sos czosnkowy, bez cebuli" class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs focus:outline-none focus:border-red-800" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Footer CTA -->
+              <div class="p-4 border-t border-stone-200 bg-white space-y-3 pb-safe">
+                <div class="flex justify-between text-sm font-black text-stone-900">
+                  <span>RAZEM Z DOSTAWĄ:</span>
+                  <span>${finalPrice} zł</span>
+                </div>
+                <button onclick="submitSMSOrder('${rest ? rest.id : ''}')" class="w-full py-3.5 px-4 rounded-2xl bg-red-800 hover:bg-red-900 text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg shadow-red-900/30 active:scale-[0.98] transition">
+                  <i data-lucide="message-square" class="w-4 h-4"></i>
+                  <span>ZAMÓW PRZEZ SMS</span>
+                </button>
+                <p class="text-[10px] text-center text-stone-400">0 zł prowizji · SMS wysyłasz bezpośrednio ze swojego telefonu</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderOrderModal() {
+        const d = orderModalData;
+        return `
+          <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+            <div class="w-full max-w-md bg-white rounded-3xl p-5 shadow-2xl border border-stone-200 text-stone-900 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-stone-100">
+                <h3 class="font-extrabold text-base text-stone-900">Gotowe zamówienie SMS</h3>
+                <button onclick="closeOrderModal()" class="p-1 text-stone-400 hover:text-stone-700">
+                  <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+              </div>
+
+              <div class="p-3 bg-stone-50 rounded-2xl border border-stone-200 space-y-1.5 text-xs text-stone-700">
+                <p class="font-bold text-[11px] uppercase tracking-wider text-stone-900">Co teraz zrobić:</p>
+                <p>1. Dotknij przycisku <strong>OTWÓRZ APLIKACJĘ SMS</strong> poniżej.</p>
+                <p>2. Telefon otworzy Wiadomości z wpisanym numerem i gotową treścią.</p>
+                <p>3. Wciśnij <strong>Wyślij</strong>. Lokal otrzyma SMS bez prowizji!</p>
+              </div>
+
+              <div>
+                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">Treść przygotowanego SMS-a:</p>
+                <div class="p-3 bg-stone-900 text-stone-100 rounded-xl font-mono text-xs whitespace-pre-wrap select-all max-h-36 overflow-y-auto">
+${d.text}
+                </div>
+              </div>
+
+              <div class="space-y-2 pt-1">
+                <a href="${d.smsUrl}" onclick="closeCart(); closeOrderModal();" class="w-full py-3.5 px-4 rounded-xl bg-red-800 hover:bg-red-900 text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-md active:scale-[0.98] transition">
+                  <i data-lucide="message-square" class="w-4 h-4"></i>
+                  <span>OTWÓRZ APLIKACJĘ SMS</span>
+                </a>
+
+                <div class="grid grid-cols-2 gap-2">
+                  <button onclick="copySMSText('${encodeURIComponent(d.text)}')" class="py-2.5 px-3 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-xs font-bold text-stone-700">
+                    Kopiuj treść
+                  </button>
+                  <a href="tel:${d.phone}" class="py-2.5 px-3 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-xs font-bold text-stone-700 flex items-center justify-center gap-1">
+                    <i data-lucide="phone" class="w-3.5 h-3.5 text-red-800"></i>
+                    <span>Zadzwoń</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // ACTIONS
+      function goHome() {
+        activeRestaurant = null;
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function openRestaurant(id) {
+        activeRestaurant = RESTAURANTS.find(r => r.id === id);
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function setSearch(val) {
+        searchQuery = val;
+        render();
+      }
+
+      function setCategory(cat) {
+        activeCategory = cat;
+        render();
+      }
+
+      function toggleFilterDelivery() {
+        filterDelivery = !filterDelivery;
+        render();
+      }
+
+      function toggleFilterTakeaway() {
+        filterTakeaway = !filterTakeaway;
+        render();
+      }
+
+      function addToCart(restId, itemId, name, price) {
+        if (cartRestId && cartRestId !== restId && cart.length > 0) {
+          if (!confirm('Masz w koszyku pozycje z innego lokalu. Czy chcesz wyczyścić koszyk i rozpocząć nowe zamówienie?')) {
+            return;
+          }
+          cart = [];
+        }
+        cartRestId = restId;
+        const existing = cart.find(i => i.id === itemId);
+        if (existing) {
+          existing.qty += 1;
+        } else {
+          cart.push({ id: itemId, name, price, qty: 1 });
+        }
+        saveCart();
+        render();
+      }
+
+      function updateQty(itemId, delta) {
+        const item = cart.find(i => i.id === itemId);
+        if (!item) return;
+        item.qty += delta;
+        if (item.qty <= 0) {
+          cart = cart.filter(i => i.id !== itemId);
+          if (cart.length === 0) cartRestId = null;
+        }
+        saveCart();
+        render();
+      }
+
+      function openCart() {
+        isCartOpen = true;
+        render();
+      }
+
+      function closeCart() {
+        isCartOpen = false;
+        render();
+      }
+
+      function setStreetInput(street) {
+        const inp = document.getElementById('cust-address');
+        if (inp) {
+          inp.value = street + ' ';
+          inp.focus();
+        }
+      }
+
+      function submitSMSOrder(restId) {
+        const rest = RESTAURANTS.find(r => r.id === restId);
+        if (!rest) return;
+
+        const name = (document.getElementById('cust-name')?.value || '').trim();
+        const phone = (document.getElementById('cust-phone')?.value || '').trim();
+        const address = (document.getElementById('cust-address')?.value || '').trim();
+        const notes = (document.getElementById('cust-notes')?.value || '').trim();
+
+        if (!name) { alert('Podaj swoje imię!'); return; }
+        if (!phone) { alert('Podaj swój numer telefonu!'); return; }
+        if (!address) { alert('Podaj ulicę i numer lokalu w Rogoźnie!'); return; }
+
+        const totalItemsPrice = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+        if (totalItemsPrice < rest.minOrder) {
+          alert('Minimalna kwota zamówienia w ' + rest.name + ' to ' + rest.minOrder + ' zł!');
+          return;
+        }
+
+        const deliveryFee = rest.hasDelivery ? rest.deliveryFee : 0;
+        const finalPrice = totalItemsPrice + deliveryFee;
+
+        // Build clean SMS text adhering to 7-bit GSM standard
+        const lines = [
+          'ROGOZNO JE',
+          '',
+          removeDiacritics(rest.name),
+          ''
+        ];
+
+        cart.forEach(i => {
+          lines.push(`${i.qty}x ${removeDiacritics(i.name)} - ${i.price * i.qty} zl`);
+        });
+
+        lines.push('');
+        lines.push(`Dostawa: ${deliveryFee} zl`);
+        lines.push(`RAZEM: ${finalPrice} zl`);
+        lines.push('');
+        lines.push('DOSTAWA:');
+        lines.push(removeDiacritics(name));
+        lines.push(removeDiacritics(address));
+        lines.push('Rogozno');
+        lines.push(`Tel: ${phone}`);
+
+        if (notes) {
+          lines.push('');
+          lines.push(`Uwagi: ${removeDiacritics(notes)}`);
+        }
+
+        const smsText = lines.join('\n');
+        const cleanPhone = rest.phone.replace(/[^0-9+]/g, '');
+
+        // iOS vs Android link compatibility
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent || '');
+        const sep = isIOS ? '&' : '?';
+        const smsUrl = `sms:${cleanPhone}${sep}body=${encodeURIComponent(smsText)}`;
+
+        // Copy to clipboard silently
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(smsText).catch(() => {});
+        }
+
+        orderModalData = {
+          text: smsText,
+          smsUrl: smsUrl,
+          phone: cleanPhone
+        };
+
+        render();
+      }
+
+      function closeOrderModal() {
+        orderModalData = null;
+        render();
+      }
+
+      function copySMSText(encText) {
+        const text = decodeURIComponent(encText);
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(text).then(() => alert('Treść zamówienia została skopiowana!'));
+        }
+      }
+
+      // INITIAL BOOT
+      window.addEventListener('DOMContentLoaded', () => {
+        render();
+      });
+      render();
+    </script>
   </body>
 </html>
