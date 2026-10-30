@@ -25,6 +25,9 @@ export interface Restaurant {
   hasTakeaway: boolean;
   isActive: boolean;
   isTemporaryClosed: boolean;
+  rating?: number;
+  reviewCount?: number;
+  socialUrl?: string;
   openingHours: Record<DayOfWeek, DayHours>;
 }
 

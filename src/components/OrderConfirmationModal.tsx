@@ -100,11 +100,30 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
           </div>
         </div>
 
+        {/* 3-Step Mobile Workflow */}
+        <div className="mt-4 p-3.5 bg-stone-50 rounded-2xl border border-stone-200/80 space-y-2 text-xs">
+          <p className="font-bold text-stone-800 text-[11px] uppercase tracking-wider">
+            Jak dokończyć zamówienie w 3 krokach:
+          </p>
+          <div className="flex items-start gap-2 text-stone-600">
+            <span className="w-4 h-4 rounded-full bg-red-800 text-white font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">1</span>
+            <span>Dotknij poniższego przycisku <strong>OTWÓRZ APLIKACJĘ SMS</strong>.</span>
+          </div>
+          <div className="flex items-start gap-2 text-stone-600">
+            <span className="w-4 h-4 rounded-full bg-red-800 text-white font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">2</span>
+            <span>Twój telefon otworzy Wiadomości z uzupełnionym numerem lokalu i treścią.</span>
+          </div>
+          <div className="flex items-start gap-2 text-stone-600">
+            <span className="w-4 h-4 rounded-full bg-red-800 text-white font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">3</span>
+            <span>Wystarczy wcisnąć <strong>Wyślij</strong>. Lokal otrzyma SMS bez żadnych prowizji!</span>
+          </div>
+        </div>
+
         {/* Primary Action Button */}
-        <div className="mt-5 space-y-2.5">
+        <div className="mt-4 space-y-2.5">
           <button
             onClick={handleOpenSMS}
-            className="w-full py-3.5 px-4 rounded-2xl bg-red-800 hover:bg-red-900 active:scale-[0.99] text-white text-sm sm:text-base font-extrabold flex items-center justify-center gap-2 shadow-lg shadow-red-900/20 transition"
+            className="w-full py-4 px-4 rounded-2xl bg-red-800 hover:bg-red-900 active:scale-[0.98] text-white text-base font-extrabold flex items-center justify-center gap-2 shadow-lg shadow-red-900/30 transition"
           >
             <MessageSquare className="w-5 h-5" />
             <span>OTWÓRZ APLIKACJĘ SMS</span>

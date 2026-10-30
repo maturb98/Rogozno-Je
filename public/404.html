@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8">
+    <title>Rogoźno Je - Przekierowanie...</title>
+    <script>
+      // Single Page Apps for GitHub Pages
+      // MIT License
+      // https://github.com/rafgraph/spa-github-pages
+      // This script takes the current URL and converts the path and query
+      // into a hash fragment so that the single page app can handle the routing.
+      var pathSegmentsToKeep = 1;
+
+      var l = window.location;
+      var repoPath = l.pathname.slice(1).split('/')[0];
+      var isProjectPage = l.hostname.indexOf('github.io') !== -1;
+      
+      // Calculate redirect URL preserving hash or redirecting to root
+      var target = l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+        (isProjectPage ? '/' + repoPath : '') + '/?' +
+        (l.pathname.slice(1) ? 'p=' + encodeURIComponent(l.pathname.slice(1)) : '') +
+        (l.search ? '&q=' + encodeURIComponent(l.search.slice(1)) : '') +
+        l.hash;
+
+      window.location.replace(target);
+    </script>
+  </head>
+  <body>
+    <p>Przekierowywanie do aplikacji Rogoźno Je...</p>
+  </body>
+</html>

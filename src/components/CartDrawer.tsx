@@ -144,6 +144,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
     <>
       <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
         <div className="w-full max-w-lg bg-white h-full flex flex-col shadow-2xl text-stone-900 overflow-hidden animate-in slide-in-from-right duration-300">
+          {/* Mobile Sheet Grab Handle */}
+          <div className="w-12 h-1 bg-stone-300 rounded-full mx-auto my-2 block sm:hidden" />
           {/* Header */}
           <div className="p-4 sm:p-5 border-b border-stone-200 flex items-center justify-between bg-stone-50">
             <div>
@@ -364,6 +366,22 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                           {formErrors.street && (
                             <p className="text-[11px] text-rose-600 mt-1">{formErrors.street}</p>
                           )}
+                          {/* Quick street chips for mobile users */}
+                          <div className="mt-1.5 flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                            {['Wielka Poznańska', 'Czarnkowska', 'Kościuszki', 'Nowa', 'Pl. Marcinkowskiego', 'Kotlarska'].map((stName) => (
+                              <button
+                                key={stName}
+                                type="button"
+                                onClick={() => {
+                                  setStreet(stName);
+                                  if (formErrors.street) setFormErrors({ ...formErrors, street: '' });
+                                }}
+                                className="px-2 py-0.5 rounded-lg bg-stone-100 hover:bg-red-50 hover:text-red-800 text-[11px] text-stone-600 shrink-0 font-medium transition active:scale-95"
+                              >
+                                {stName}
+                              </button>
+                            ))}
+                          </div>
                         </div>
 
                         <div>

@@ -1,9 +1,9 @@
 import { INITIAL_CATEGORIES, INITIAL_MENU_ITEMS, INITIAL_RESTAURANTS } from '../data/initialData';
 import { CartState, Category, CustomerOrderData, MenuItem, Restaurant } from '../types';
 
-const RESTAURANTS_KEY = 'rogozno_je_restaurants_v1';
-const CATEGORIES_KEY = 'rogozno_je_categories_v1';
-const MENU_ITEMS_KEY = 'rogozno_je_menu_items_v1';
+const RESTAURANTS_KEY = 'rogozno_je_restaurants_v3';
+const CATEGORIES_KEY = 'rogozno_je_categories_v3';
+const MENU_ITEMS_KEY = 'rogozno_je_menu_items_v3';
 const CART_KEY = 'rogozno_je_cart_v1';
 const CUSTOMER_KEY = 'rogozno_je_customer_data_v1';
 const ADMIN_AUTH_KEY = 'rogozno_je_admin_auth';

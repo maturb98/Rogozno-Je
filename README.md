@@ -33,7 +33,20 @@ Projekt został przygotowany w dwóch w pełni kompatybilnych wersjach:
 
 ---
 
-## 📋 Spis Treści Instrukcji Uruchomienia (Sekcja 30)
+## 🌐 Błyskawiczny Hosting na GitHub Pages (0 zł)
+
+Aplikacja jest w 100% dostosowana do działania na **GitHub Pages**:
+- Skonfigurowano `base: './'` w `vite.config.ts`, dzięki czemu działa pod dowolną ścieżką repozytorium (np. `https://twoj-login.github.io/rogozno-je/`).
+- Przygotowano plik `public/404.html` ze skryptem SPA redirect, zapobiegającym błędom 404 przy bezpośrednich odnośnikach.
+- Dodano automatyczny workflow GitHub Actions w `.github/workflows/deploy.yml`.
+
+### Jak uruchomić na GitHub Pages w 2 minuty:
+1. Wypchnij kod do swojego repozytorium na GitHubie (`git push origin main`).
+2. Wejdź w repozytorium w zakładkę **Settings** -> **Pages**.
+3. W sekcji **Build and deployment** wybierz **Source**: **GitHub Actions**.
+4. GitHub automatycznie uruchomi workflow i po minucie strona będzie dostępna online!
+
+---
 
 1. [Wymagania systemowe](#1-wymagania-systemowe)
 2. [Instalacja repozytorium](#2-instalacja-repozytorium)

@@ -29,7 +29,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
           onSelect(restaurant);
         }
       }}
-      className="group relative bg-white rounded-3xl overflow-hidden border border-stone-200/90 shadow-sm hover:shadow-md transition cursor-pointer flex flex-col text-left focus:outline-none focus:ring-2 focus:ring-red-700/30"
+      className="group relative bg-white rounded-3xl overflow-hidden border border-stone-200/90 shadow-2xs hover:shadow-md active:scale-[0.98] transition cursor-pointer flex flex-col text-left focus:outline-none focus:ring-2 focus:ring-red-700/30"
     >
       {/* Card Header Image */}
       <div className="relative h-44 sm:h-48 w-full bg-stone-100 overflow-hidden">
@@ -70,9 +70,18 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
       <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
         <div>
           <div className="flex items-start justify-between gap-2">
-            <h3 className="text-base sm:text-lg font-bold text-stone-900 group-hover:text-red-800 transition">
+            <h3 className="text-base sm:text-lg font-bold text-stone-900 group-hover:text-red-800 transition line-clamp-1">
               {restaurant.name}
             </h3>
+            {restaurant.rating && (
+              <div className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-50 border border-amber-200/80 text-amber-900 text-xs font-bold shrink-0">
+                <span>⭐</span>
+                <span>{restaurant.rating.toFixed(1).replace('.', ',')}</span>
+                {restaurant.reviewCount && (
+                  <span className="text-[10px] text-amber-700 font-normal">({restaurant.reviewCount})</span>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Clean Unboxed Cuisine Metadata with Dot Separator */}

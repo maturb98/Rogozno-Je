@@ -11,6 +11,7 @@ interface RestaurantProfileProps {
   menuItems: MenuItem[];
   onBack: () => void;
   onAddToCart: (item: MenuItem) => void;
+  onUpdateQuantity?: (itemId: string, delta: number) => void;
   getCartQuantity: (itemId: string) => number;
 }
 
@@ -20,6 +21,7 @@ export const RestaurantProfile: React.FC<RestaurantProfileProps> = ({
   menuItems,
   onBack,
   onAddToCart,
+  onUpdateQuantity,
   getCartQuantity,
 }) => {
   const [activeCategoryId, setActiveCategoryId] = useState<string>('all');
@@ -99,9 +101,19 @@ export const RestaurantProfile: React.FC<RestaurantProfileProps> = ({
         <div className="p-5 sm:p-7">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight">
-                {restaurant.name}
-              </h1>
+              <div className="flex items-center gap-3 flex-wrap">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight">
+                  {restaurant.name}
+                </h1>
+                {restaurant.rating && (
+                  <span className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold">
+                    <span>⭐ {restaurant.rating.toFixed(1).replace('.', ',')}</span>
+                    {restaurant.reviewCount && (
+                      <span className="text-stone-500 font-normal">({restaurant.reviewCount} opinii Google)</span>
+                    )}
+                  </span>
+                )}
+              </div>
               <p className="mt-1.5 text-xs sm:text-sm text-stone-500 max-w-2xl leading-relaxed">
                 {restaurant.description}
               </p>
@@ -242,6 +254,7 @@ export const RestaurantProfile: React.FC<RestaurantProfileProps> = ({
                     key={item.id}
                     item={item}
                     onAddToCart={onAddToCart}
+                    onUpdateQuantity={onUpdateQuantity}
                     quantityInCart={getCartQuantity(item.id)}
                   />
                 ))}

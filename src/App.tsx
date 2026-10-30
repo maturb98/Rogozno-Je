@@ -300,25 +300,25 @@ export default function App() {
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 pt-5 pb-24">
         {currentView === 'home' && (
           <div className="space-y-7">
-            {/* Hero Banner Section */}
-            <div className="relative bg-gradient-to-br from-red-900 via-stone-900 to-red-950 text-white rounded-3xl p-6 sm:p-9 shadow-md overflow-hidden">
-              <div className="relative z-10 max-w-xl space-y-2.5">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-red-200 text-xs font-semibold">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Rogoźno, Wielkopolska · Zamawianie bez pośredników</span>
+            {/* Hero Banner Section (Mobile Optimized) */}
+            <div className="relative bg-gradient-to-br from-red-900 via-stone-900 to-red-950 text-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-sm overflow-hidden">
+              <div className="relative z-10 max-w-xl space-y-2">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/10 backdrop-blur-md text-red-200 text-[11px] font-semibold">
+                  <Sparkles className="w-3 h-3 text-red-300" />
+                  <span>Rogoźno · Bezpośrednio z lokali bez prowizji</span>
                 </div>
-                <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
+                <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight">
                   Co dzisiaj zamawiamy?
                 </h1>
-                <p className="text-xs sm:text-sm text-stone-200 leading-relaxed">
-                  Przeglądaj menu lokalnych restauracji w Rogoźnie, dodawaj dania do koszyka i zamawiaj gotowym SMS-em prosto ze swojego telefonu. Bez rejestracji i bez dodatkowych prowizji!
+                <p className="text-xs text-stone-300 leading-relaxed max-w-lg">
+                  Wybierz restaurację w Rogoźnie, dodaj dania do koszyka i wyślij gotowe zamówienie SMS bezpośrednio ze swojego telefonu.
                 </p>
               </div>
 
               {/* Decorative elements */}
-              <div className="absolute -right-12 -bottom-12 w-64 h-64 rounded-full bg-red-700/20 blur-2xl pointer-events-none" />
+              <div className="absolute -right-12 -bottom-12 w-48 h-48 rounded-full bg-red-700/20 blur-2xl pointer-events-none" />
               <div className="absolute right-6 top-6 hidden lg:block opacity-15 text-white">
-                <ShoppingBag className="w-48 h-48" />
+                <ShoppingBag className="w-36 h-36" />
               </div>
             </div>
 
@@ -435,6 +435,7 @@ export default function App() {
             menuItems={menuItems}
             onBack={handleGoHome}
             onAddToCart={handleAddToCart}
+            onUpdateQuantity={handleUpdateQuantity}
             getCartQuantity={getItemQuantity}
           />
         )}
@@ -469,22 +470,29 @@ export default function App() {
 
       {/* Floating Sticky Mobile Bottom Cart Bar (Thumb Zone Ergonomics) */}
       {cartItems.length > 0 && currentView !== 'admin' && (
-        <div className="fixed bottom-0 left-0 right-0 z-30 p-3 sm:p-4 bg-gradient-to-t from-white via-white/95 to-transparent backdrop-blur-xs pb-safe">
+        <div className="fixed bottom-0 left-0 right-0 z-30 p-3 sm:p-4 bg-gradient-to-t from-white via-white/95 to-transparent backdrop-blur-md pb-safe">
           <div className="max-w-md mx-auto">
             <button
               onClick={() => setIsCartOpen(true)}
-              className="w-full py-3.5 px-5 rounded-2xl bg-red-800 hover:bg-red-900 active:scale-[0.99] text-white font-extrabold text-sm sm:text-base flex items-center justify-between shadow-xl shadow-red-900/25 transition"
+              className="w-full py-4 px-5 rounded-2xl bg-red-800 hover:bg-red-900 active:scale-[0.98] text-white font-extrabold text-sm sm:text-base flex items-center justify-between shadow-2xl shadow-red-900/35 transition border border-red-700/50"
             >
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-xs">
+              <div className="flex items-center gap-3">
+                <div className="w-7 h-7 rounded-full bg-white text-red-900 font-black flex items-center justify-center text-xs shadow-sm">
                   {totalCartCount}
                 </div>
-                <span>Koszyk · {cartRestaurant?.name || 'Zamówienie'}</span>
+                <div className="text-left">
+                  <p className="leading-tight font-extrabold text-sm">Przejdź do kasy</p>
+                  <p className="text-[11px] font-medium text-red-100 truncate max-w-[170px] leading-tight">
+                    {cartRestaurant?.name || 'Twoje zamówienie'}
+                  </p>
+                </div>
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="tabular-nums font-black">{totalCartPrice.toFixed(2)} zł</span>
-                <ArrowRight className="w-4 h-4 opacity-75" />
+                <span className="tabular-nums font-black text-base">{totalCartPrice.toFixed(2)} zł</span>
+                <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+                  <ArrowRight className="w-3.5 h-3.5 text-white" />
+                </div>
               </div>
             </button>
           </div>

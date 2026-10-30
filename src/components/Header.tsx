@@ -1,6 +1,5 @@
 import React from 'react';
-import { UtensilsCrossed, ShieldAlert, ShoppingBag } from 'lucide-react';
-import { PWAInstallButton } from './PWAInstallButton';
+import { UtensilsCrossed, ShoppingBag, ShieldCheck } from 'lucide-react';
 
 interface HeaderProps {
   onGoHome: () => void;
@@ -18,31 +17,29 @@ export const Header: React.FC<HeaderProps> = ({
   currentView,
 }) => {
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-stone-200/80 shadow-xs transition-colors">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-        {/* Zone 1: Brand Wordmark */}
+    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-stone-200/90 shadow-2xs">
+      <div className="w-full max-w-6xl mx-auto px-3 sm:px-6 h-14 sm:h-16 flex flex-row items-center justify-between gap-2">
+        {/* Left: Brand Logo & Title in fluid flex-row */}
         <button
           onClick={onGoHome}
-          className="flex items-center gap-2.5 text-left group focus:outline-none"
+          className="flex flex-row items-center gap-2 text-left focus:outline-none shrink-0"
+          aria-label="Rogoźno Je - Strona główna"
         >
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-red-700 to-red-900 flex items-center justify-center text-white shadow-md shadow-red-900/20 group-hover:scale-105 transition-transform shrink-0">
-            <UtensilsCrossed className="w-5 h-5 text-white" />
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-red-700 to-red-900 flex flex-row items-center justify-center text-white shadow-xs shrink-0">
+            <UtensilsCrossed className="w-4 h-4 text-white" />
           </div>
-          <div className="flex flex-col">
-            <span className="font-extrabold text-lg sm:text-xl tracking-tight text-red-900 leading-tight">
-              Rogoźno Je
-            </span>
-            <span className="text-[11px] font-semibold text-stone-500 leading-none">
-              Co dzisiaj zamawiamy?
-            </span>
-          </div>
+          <span className="font-extrabold text-base sm:text-lg text-red-900 tracking-tight whitespace-nowrap">
+            Rogoźno Je
+          </span>
         </button>
 
-        {/* Zone 2: Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-stone-600">
+        {/* Center: Desktop Navigation Links (hidden on mobile, zero impact on 375-430px) */}
+        <nav className="hidden md:flex flex-row items-center gap-6 text-sm font-medium text-stone-600">
           <button
             onClick={onGoHome}
-            className={`transition hover:text-red-800 ${currentView === 'home' ? 'text-red-800 font-semibold' : ''}`}
+            className={`transition hover:text-red-800 ${
+              currentView === 'home' ? 'text-red-800 font-bold' : ''
+            }`}
           >
             Restauracje
           </button>
@@ -63,38 +60,34 @@ export const Header: React.FC<HeaderProps> = ({
           </a>
           <button
             onClick={onOpenAdmin}
-            className={`hover:text-red-800 transition flex items-center gap-1 ${currentView === 'admin' ? 'text-red-800 font-semibold' : ''}`}
+            className={`hover:text-red-800 transition ${
+              currentView === 'admin' ? 'text-red-800 font-bold' : ''
+            }`}
           >
-            Panel restauratora
+            Dla lokali / Admin
           </button>
         </nav>
 
-        {/* Zone 3: Actions */}
-        <div className="flex items-center gap-2 shrink-0">
-          <PWAInstallButton />
-
-          {/* Quick Cart button if on desktop or has items */}
+        {/* Right: Actions in fluid flex-row */}
+        <div className="flex flex-row items-center gap-1.5 sm:gap-2 shrink-0">
           {cartCount > 0 && onOpenCart && (
             <button
               onClick={onOpenCart}
               aria-label="Otwórz koszyk"
-              className="relative p-2 rounded-xl bg-red-50 text-red-800 hover:bg-red-100 transition min-h-[40px] min-w-[40px] flex items-center justify-center"
+              className="flex flex-row items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-800 hover:bg-red-900 text-white transition active:scale-95 shadow-xs"
             >
-              <ShoppingBag className="w-5 h-5" />
-              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-700 text-white text-[10px] font-bold flex items-center justify-center border-2 border-white shadow">
-                {cartCount}
-              </span>
+              <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="text-xs font-bold tabular-nums">{cartCount}</span>
             </button>
           )}
 
-          {/* Admin Icon button for mobile */}
           <button
             onClick={onOpenAdmin}
-            aria-label="Panel administratora"
-            title="Panel administratora"
-            className="md:hidden p-2 text-stone-500 hover:text-red-800 hover:bg-stone-100 rounded-xl transition min-h-[40px] min-w-[40px] flex items-center justify-center"
+            aria-label="Panel lokalu"
+            title="Panel lokalu"
+            className="p-2 text-stone-400 hover:text-stone-800 hover:bg-stone-100 rounded-xl transition flex flex-row items-center justify-center shrink-0 min-h-[36px] min-w-[36px]"
           >
-            <ShieldAlert className="w-5 h-5" />
+            <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
       </div>
