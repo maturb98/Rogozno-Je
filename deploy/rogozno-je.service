@@ -1,0 +1,17 @@
+[Unit]
+Description=Gunicorn daemon for Rogozno Je SMS Food Aggregator
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/rogozno-je/python_backend
+Environment="PATH=/var/www/rogozno-je/venv/bin"
+EnvironmentFile=/var/www/rogozno-je/python_backend/.env
+ExecStart=/var/www/rogozno-je/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:8000 run:app
+
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

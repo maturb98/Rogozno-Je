@@ -1,0 +1,6 @@
+{
+  "name": "Rogoźno Je - Lokalny Agregator Gastronomii",
+  "description": "Zamawiaj jedzenie z lokalnych lokali w Rogoźnie bezpośrednio przez SMS bez prowizji i bez pośredników. Przeglądaj menu, kompletuj koszyk i generuj gotowe zamówienie w kilka sekund.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

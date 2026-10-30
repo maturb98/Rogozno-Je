@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#b91c1c" />
+      <stop offset="100%" stop-color="#7f1d1d" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  
+  <!-- Subtle inner decorative plate ring -->
+  <circle cx="256" cy="256" r="180" fill="none" stroke="#fee2e2" stroke-width="6" opacity="0.25"/>
+  
+  <!-- Cloche / Plate dome & Burger silhouette -->
+  <g filter="url(#shadow)" fill="#ffffff">
+    <!-- Burger Top Bun -->
+    <path d="M166 230 C166 170 346 170 346 230 Z" />
+    
+    <!-- Cheese & Patty slice -->
+    <rect x="156" y="244" width="200" height="20" rx="10" fill="#fef08a"/>
+    <rect x="160" y="272" width="192" height="26" rx="12" fill="#fed7aa"/>
+    
+    <!-- Burger Bottom Bun -->
+    <rect x="166" y="306" width="180" height="26" rx="13" />
+    
+    <!-- Fork on left -->
+    <path d="M124 180 L124 220 C124 235 134 245 142 248 L142 330 C142 334 138 338 134 338 C130 338 126 334 126 330 L126 260 L120 260 L120 330 C120 342 129 350 138 350 C147 350 156 342 156 330 L156 248 C164 245 174 235 174 220 L174 180 L164 180 L164 220 C164 228 158 234 150 234 L148 234 C140 234 134 228 134 220 L134 180 Z" opacity="0.9" fill="#ffffff" />
+
+    <!-- Knife on right -->
+    <path d="M360 180 C375 180 384 200 384 230 L384 280 L372 280 L372 340 C372 346 368 350 362 350 C356 350 352 346 352 340 L352 280 L346 280 L346 180 Z" opacity="0.9" fill="#ffffff" />
+  </g>
+  
+  <!-- Text mark "ROGOŹNO JE" -->
+  <text x="256" y="415" font-family="'Plus Jakarta Sans', sans-serif" font-size="44" font-weight="800" text-anchor="middle" fill="#ffffff" letter-spacing="2">ROGOŹNO JE</text>
+  <text x="256" y="445" font-family="'Plus Jakarta Sans', sans-serif" font-size="20" font-weight="600" text-anchor="middle" fill="#fca5a5" letter-spacing="3">ZAMAWIAJ PRZEZ SMS</text>
+</svg>
