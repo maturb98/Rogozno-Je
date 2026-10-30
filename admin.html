@@ -1,0 +1,1217 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Panel Administratora - Rogoźno Je | Zarządzanie Lokalami i Menu</title>
+    
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                50: '#fef2f2',
+                100: '#fee2e2',
+                200: '#fecaca',
+                500: '#ef4444',
+                700: '#b91c1c',
+                800: '#991b1b',
+                900: '#7f1d1d',
+                950: '#450a0a',
+              }
+            },
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+            }
+          }
+        }
+      }
+    </script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+      body {
+        font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+        background-color: #f8fafc;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      .pb-safe { padding-bottom: max(env(safe-area-inset-bottom, 1rem), 1rem); }
+      
+      #toast-container {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 100;
+        pointer-events: none;
+      }
+      .toast-msg {
+        pointer-events: auto;
+        animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      @keyframes toastIn {
+        from { opacity: 0; transform: translateY(12px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+    </style>
+  </head>
+  <body class="text-stone-900 min-h-screen flex flex-col bg-slate-50 antialiased selection:bg-brand-800 selection:text-white">
+    <div id="toast-container" class="flex flex-col gap-2"></div>
+
+    <!-- Top Admin App Bar -->
+    <header class="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-2xs">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <a href="index.html" class="flex items-center gap-2.5 group">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-700 to-brand-900 flex items-center justify-center text-white shadow-xs">
+              <i data-lucide="utensils" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <span class="font-black text-base text-stone-900 group-hover:text-brand-800 transition block leading-tight">Rogoźno Je</span>
+              <span class="text-[11px] font-bold text-brand-800 tracking-wide uppercase leading-none">Panel Administratora</span>
+            </div>
+          </a>
+        </div>
+
+        <div class="flex items-center gap-2 sm:gap-3">
+          <a href="index.html" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 bg-slate-100 hover:bg-slate-200 text-stone-700 text-xs font-bold transition shadow-2xs">
+            <i data-lucide="eye" class="w-3.5 h-3.5 text-stone-500"></i>
+            <span class="hidden sm:inline">Podgląd strony</span>
+            <span class="sm:hidden">Podgląd</span>
+          </a>
+
+          <button onclick="downloadBackupJSON()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-stone-700 text-xs font-bold transition shadow-2xs">
+            <i data-lucide="download" class="w-3.5 h-3.5 text-stone-500"></i>
+            <span class="hidden sm:inline">Pobierz JSON</span>
+          </button>
+
+          <button onclick="openNewRestView()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-brand-800 hover:bg-brand-900 text-white text-xs font-extrabold transition shadow-sm shadow-brand-900/20 active:scale-95">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>+ Dodaj lokal</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Sub Navigation Tabs Bar -->
+    <div class="bg-white border-b border-slate-200 sticky top-16 z-30 shadow-2xs">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-1 overflow-x-auto no-scrollbar py-2">
+        <button onclick="setView('list')" id="nav-list" class="nav-tab px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2">
+          <i data-lucide="layout-grid" class="w-4 h-4"></i>
+          <span>Wszystkie lokale (<span id="nav-count">0</span>)</span>
+        </button>
+        <button onclick="setView('edit')" id="nav-edit" class="nav-tab px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2">
+          <i data-lucide="edit-3" class="w-4 h-4"></i>
+          <span id="nav-edit-label">Szczegóły lokalu</span>
+        </button>
+        <button onclick="setView('backup')" id="nav-backup" class="nav-tab px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2">
+          <i data-lucide="database" class="w-4 h-4"></i>
+          <span>Baza danych i Kopia</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6" id="admin-root">
+      <!-- Dynamic View Rendered Here -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-500">
+      <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <p class="font-semibold text-slate-700">Rogoźno Je · Panel Zarządzania Gastronomią (64-610)</p>
+        <p class="text-slate-400">Wszystkie modyfikacje zapisują się natychmiast w pamięci przeglądarki.</p>
+      </div>
+    </footer>
+
+    <!-- Admin Logic Script -->
+    <script>
+      // 15 AUTHENTIC INITIAL RESTAURANTS FROM CSV
+      const RESTAURANTS_INITIAL = [
+        {
+          id: 'rest-1',
+          name: 'Restauracja Dom Smaków',
+          slug: 'restauracja-dom-smakow',
+          desc: 'Kuchnia polska, chrupiąca pizza i domowe dania obiadowe z szybkim dowozem na terenie całego Rogoźna.',
+          cuisines: ['Obiady', 'Pizza', 'Polska'],
+          phone: '723 200 344',
+          address: 'Fabryczna 7/J, Rogoźno',
+          minOrder: 35,
+          deliveryFee: 5,
+          time: '30-45 min',
+          hasDelivery: true,
+          hasTakeaway: true,
+          rating: 4.4,
+          reviews: 463,
+          badge: 'Klasyk Rogoźna',
+          hours: { mon: '12:00-21:00', tue: '12:00-21:00', wed: '12:00-21:00', thu: '12:00-21:00', fri: '12:00-23:00', sat: '12:00-23:00', sun: '12:00-20:00' },
+          menu: [
+            { id: 'm1-1', name: 'Kotlet Schabowy z Ziemniakami i Kapustą', desc: 'Duży, tradycyjny schabowy smażony na złoto, tłuczone ziemniaki z koperkiem, zasmażana kapusta.', price: 32, cat: 'Obiady', tag: 'Bestseller' },
+            { id: 'm1-2', name: 'Filet z Kurczaka w Ziołach', desc: 'Soczysta pierś z kurczaka z grilla, złociste frytki, zestaw świeżych surówek.', price: 30, cat: 'Obiady' },
+            { id: 'm1-3', name: 'Pizza Dom Smaków (32 cm)', desc: 'Sos pomidorowy, ser mozzarella, szynka, pieczarki, kukurydza, papryka, oregano.', price: 34, cat: 'Pizza', tag: 'Polecane' },
+            { id: 'm1-4', name: 'Żurek Staropolski z Jajkiem i Kiełbasą', desc: 'Domowy zakwas żytni, wędzona biała kiełbasa, majeranek, ugotowane jajko wiejskie.', price: 16, cat: 'Zupy' }
+          ]
+        },
+        {
+          id: 'rest-2',
+          name: 'Restauracja Kamienica',
+          slug: 'restauracja-kamienica',
+          desc: 'Kuchnia polska i europejska w zabytkowym sercu Rogoźna. Steki sezonowane, polędwiczki i dania rybne.',
+          cuisines: ['Obiady', 'Polska', 'Europejska'],
+          phone: '668 301 584',
+          address: 'plac Powstańców Wlkp. 16, Rogoźno',
+          minOrder: 40,
+          deliveryFee: 0,
+          time: '25-35 min',
+          hasDelivery: false,
+          hasTakeaway: true,
+          rating: 4.6,
+          reviews: 264,
+          badge: 'Wykwintna kuchnia',
+          hours: { mon: 'Zamknięte', tue: '12:00-22:00', wed: '12:00-22:00', thu: '12:00-22:00', fri: '12:00-22:00', sat: '12:00-22:00', sun: '12:00-22:00' },
+          menu: [
+            { id: 'm2-1', name: 'Polędwiczki w Sosie Kurkowym', desc: 'Medaliony z polędwiczki wieprzowej w kremowym sosie ze świeżych kurek leśnych, kluski śląskie.', price: 44, cat: 'Dania Główne', tag: 'Specjalność' },
+            { id: 'm2-2', name: 'Stek Wołowy z Masłem Czosnkowym', desc: 'Sezonowana wołowina z patelni grillowej, pieczone ziemniaczki w mundurkach, grillowane warzywa.', price: 59, cat: 'Dania Główne' },
+            { id: 'm2-3', name: 'Rosół z Kołdunami Mięsnymi', desc: 'Długo gotowany esencjonalny bulion z ręcznie lepionymi kołdunkami litewskimi.', price: 18, cat: 'Zupy' }
+          ]
+        },
+        {
+          id: 'rest-3',
+          name: 'Kultowa Bistro',
+          slug: 'kultowa-bistro',
+          desc: 'Prawdziwe burgery wołowe 100%, chrupiąca pizza neapolitańska oraz świeże frytki belgijskie z autorskimi sosami.',
+          cuisines: ['Burgery', 'Pizza', 'Bistro'],
+          phone: '723 715 712',
+          address: 'Wojska Polskiego 4, Rogoźno',
+          minOrder: 30,
+          deliveryFee: 5,
+          time: '30-45 min',
+          hasDelivery: true,
+          hasTakeaway: true,
+          rating: 4.6,
+          reviews: 49,
+          badge: '100% Wołowina',
+          hours: { mon: '13:00-21:00', tue: '13:00-21:00', wed: '13:00-21:00', thu: '13:00-21:00', fri: '13:00-22:00', sat: '13:00-22:00', sun: '13:00-21:00' },
+          menu: [
+            { id: 'm3-1', name: 'Kultowy Burger Wołowy', desc: '100% polska wołowina 180g, podwójny cheddar, chrupiący bekon, czerwona cebula, sos bistro.', price: 33, cat: 'Burgery', tag: 'Hit' },
+            { id: 'm3-2', name: 'Jalapeño Burger Pikantny', desc: 'Wołowina 180g, papryczki jalapeño, ser gouda, prażona cebulka, pikantny sos chipotle.', price: 35, cat: 'Burgery', tag: 'Ostre' },
+            { id: 'm3-3', name: 'Pizza Neapolitańska Margherita', desc: 'Sos z pomidorów San Marzano, mozzarella fior di latte, świeża bazylia, oliwa extra virgin.', price: 29, cat: 'Pizza' },
+            { id: 'm3-4', name: 'Frytki Belgijskie z Sosem Czosnkowym', desc: 'Grube, dwukrotnie smażone frytki posypane solą morską.', price: 15, cat: 'Dodatki' }
+          ]
+        },
+        {
+          id: 'rest-4',
+          name: 'Wiosło i widelec (Komsport)',
+          slug: 'wioslo-i-widelec',
+          desc: 'Klimatyczna restauracja nad Jeziorem Rogozińskim. Świeży sandacz, pstrąg z pieca i regionalne dania obiadowe.',
+          cuisines: ['Ryby', 'Obiady', 'Polska'],
+          phone: '785 002 513',
+          address: 'Za Jeziorem 40, Rogoźno',
+          minOrder: 40,
+          deliveryFee: 6,
+          time: '35-50 min',
+          hasDelivery: true,
+          hasTakeaway: true,
+          rating: 4.4,
+          reviews: 22,
+          badge: 'Nad Jeziorem',
+          hours: { mon: '12:00-20:00', tue: '12:00-20:00', wed: '12:00-20:00', thu: '12:00-20:00', fri: '12:00-21:00', sat: '12:00-21:00', sun: '12:00-20:00' },
+          menu: [
+            { id: 'm4-1', name: 'Smażony Sandacz z Jeziora Rogoźno', desc: 'Soczysty filet sandacza smażony na maśle, chrupiące frytki, surówka z kiszonej kapusty.', price: 46, cat: 'Ryby', tag: 'Świeża ryba' },
+            { id: 'm4-2', name: 'Pstrąg z Pieca z Ziołami i Masłem', desc: 'Cały pstrąg pieczony w folii z masełkiem koperkowo-czosnkowym i cytryną.', price: 42, cat: 'Ryby' }
+          ]
+        },
+        {
+          id: 'rest-5',
+          name: 'Magnolia Przyjęcia w Rogoźnie',
+          slug: 'magnolia-przyjecia',
+          desc: 'Restauracja i kawiarnia tuż przy rogozińskim Rynku. Domowe obiady, tradycyjne zupy i pyszne domowe wypieki.',
+          cuisines: ['Obiady', 'Kawiarnie', 'Desery'],
+          phone: '600 825 627',
+          address: 'plac Marcinkowskiego 8, Rogoźno',
+          minOrder: 35,
+          deliveryFee: 5,
+          time: '30-40 min',
+          hasDelivery: true,
+          hasTakeaway: true,
+          rating: 4.7,
+          reviews: 205,
+          badge: 'Ocena 4.7 ⭐',
+          hours: { mon: '11:00-19:00', tue: '11:00-19:00', wed: '11:00-19:00', thu: '11:00-19:00', fri: '11:00-20:00', sat: '11:00-20:00', sun: '11:00-19:00' },
+          menu: [
+            { id: 'm5-1', name: 'Domowy Obiad Dnia Magnolia', desc: 'Danie mięsne dnia, tłuczone ziemniaki ze świeżym koperkiem, zestaw 3 domowych surówek.', price: 29, cat: 'Obiady', tag: 'Danie Dnia' },
+            { id: 'm5-2', name: 'Sernik Królewski z Czekoladą', desc: 'Puszysty sernik domowej roboty na kruchym kakaowym spodzie z polewą czekoladową.', price: 14, cat: 'Desery' }
+          ]
+        },
+        {
+          id: 'rest-6',
+          name: 'Pizzeria Kociak',
+          slug: 'pizzeria-kociak',
+          desc: 'Najdłużej działająca i najczęściej wybierana pizzeria w Rogoźnie. Ponad 650 opinii Google!',
+          cuisines: ['Pizza', 'Fast Food'],
+          phone: '511 611 698',
+          address: 'osiedle Przemysława II 3a, Rogoźno',
+          minOrder: 35,
+          deliveryFee: 5,
+          time: '30-45 min',
+          hasDelivery: true,
+          hasTakeaway: true,
+          rating: 4.2,
+          reviews: 654,
+          badge: '650+ Opinii',
+          hours: { mon: 'Zamknięte', tue: '13:00-21:00', wed: '13:00-21:00', thu: '13:00-21:00', fri: '13:00-23:00', sat: '13:00-23:00', sun: '13:00-21:00' },
+          menu: [
+            { id: 'm6-1', name: 'Pizza Kociak Specjalna (32 cm)', desc: 'Sos pomidorowy, podwójna mozzarella, szynka, salami, pieczarki, nuta czosnku.', price: 36, cat: 'Pizza', tag: 'Legenda' },
+            { id: 'm6-2', name: 'Pizza Capricciosa (32 cm)', desc: 'Sos pomidorowy, ser mozzarella, szynka wieprzowa, pieczarki.', price: 32, cat: 'Pizza' },
+            { id: 'm6-3', name: 'Sos Czosnkowy Kociak Firmowy (80ml)', desc: 'Gęsty, wyrazisty sos czosnkowy na bazie świeżego czosnku i śmietany.', price: 4, cat: 'Dodatki' }
+          ]
+        },
+        {
+          id: 'rest-7',
+          name: 'Pizza-Hit',
+          slug: 'pizza-hit',
+          desc: 'Sprawdzona pizzeria i dania obiadowe przy ul. Reja. Pizze, zapiekanki, dania gyros oraz frytki.',
+          cuisines: ['Pizza', 'Obiady'],
+          phone: '67 268 40 15',
+          address: 'Reja 28, Rogoźno',
+          minOrder: 35,
+          deliveryFee: 5,
+          time: '35-50 min',
+          hasDelivery: true,
+          hasTakeaway: true,
+          rating: 3.6,
+          reviews: 474,
+          badge: 'Tradycja',
+          hours: { mon: '12:00-21:00', tue: '12:00-21:00', wed: '12:00-21:00', thu: '12:00-21:00', fri: '12:00-23:00', sat: '12:00-23:00', sun: '12:00-21:00' },
+          menu: [
+            { id: 'm7-1', name: 'Pizza Gyros Hit (32 cm)', desc: 'Sos pomidorowy, ser mozzarella, soczysty gyros drobiowy, czerwona cebulka.', price: 35, cat: 'Pizza', tag: 'Ulubiona' },
+            { id: 'm7-2', name: 'Talerz Gyros z Frytkami', desc: 'Duża porcja opiekanego gyrosa, frytki, zestaw surówek ze świeżych warzyw, sos.', price: 31, cat: 'Obiady' }
+          ]
+        },
+        {
+          id: 'rest-8',
+          name: 'Bar U Piotra',
+          slug: 'bar-u-piotra',
+          desc: 'Kultowe domowe obiady jak u mamy. Soczysty mielony z buraczkami, schabowy i codziennie lepione pierogi ruskie.',
+          cuisines: ['Obiady', 'Polska', 'Pierogi'],
+          phone: '509 014 363',
+          address: 'osiedle Przemysława II 3B, Rogoźno',
+          minOrder: 25,
+          deliveryFee: 4,
+          time: '20-35 min',
+          hasDelivery: true,
+          hasTakeaway: true,
+          rating: 4.6,
+          reviews: 65,
+          badge: 'Kuchnia Domowa',
+          hours: { mon: '12:00-18:00', tue: '12:00-18:00', wed: '12:00-18:00', thu: '12:00-18:00', fri: '12:00-18:00', sat: '12:00-18:00', sun: '12:00-18:00' },
+          menu: [
+            { id: 'm8-1', name: 'Kotlet Mielony z Buraczkami', desc: 'Domowy kotlet mielony wieprzowo-wołowy, ziemniaki z koperkiem, zasmażane buraczki.', price: 27, cat: 'Obiady', tag: 'Hit' },
+            { id: 'm8-2', name: 'Pierogi Ruskie ze Skwarkami (8 szt.)', desc: 'Ręcznie lepione z farszem z wiejskiego twarogu i ziemniaków, okraszone skwarkami.', price: 22, cat: 'Pierogi' }
+          ]
+        },
+        {
+          id: 'rest-9',
+          name: 'Bistro Raphael',
+          slug: 'bistro-raphael',
+          desc: 'Kameralne bistro z pysznymi naleśnikami, daniami z drobiu oraz codziennym domowym obiadem.',
+          cuisines: ['Bistro', 'Obiady', 'Naleśniki'],
+          phone: '795 708 707',
+          address: 'Wojska Polskiego 46, Rogoźno',
+          minOrder: 25,
+          deliveryFee: 0,
+          time: '20-30 min',
+          hasDelivery: false,
+          hasTakeaway: true,
+          rating: 4.4,
+          reviews: 53,
+          badge: 'Pyszne Bistro',
+          hours: { mon: 'Zamknięte', tue: '13:00-19:00', wed: '13:00-19:00', thu: '13:00-19:00', fri: '13:00-19:00', sat: '13:00-19:00', sun: 'Zamknięte' },
+          menu: [
+            { id: 'm9-1', name: 'Naleśniki ze Słodkim Twarogiem i Owocami', desc: 'Dwa puszyste naleśniki z kremowym twarogiem waniliowym, musem truskawkowym.', price: 21, cat: 'Obiady' },
+            { id: 'm9-2', name: 'Kotlet De Volaille z Masełkiem Ziołowym', desc: 'Pierś z kurczaka panierowana w bułce panko, płynne masło ziołowe, frytki, surówka.', price: 29, cat: 'Obiady', tag: 'Polecane' }
+          ]
+        },
+        {
+          id: 'rest-10',
+          name: 'Chicken Bar',
+          slug: 'chicken-bar',
+          desc: 'Świeży kurczak z rożna, chrupiące stripsy i skrzydełka w panierce oraz soczyste burgery drobiowe. Rekordowa ocena 4.9!',
+          cuisines: ['Kurczak', 'Burgery', 'Fast Food'],
+          phone: '697 430 276',
+          address: 'ul. Kościuszki, Rogoźno',
+          minOrder: 30,
+          deliveryFee: 0,
+          time: '20-35 min',
+          hasDelivery: false,
+          hasTakeaway: true,
+          rating: 4.9,
+          reviews: 103,
+          badge: 'Ocena 4.9 ⭐',
+          hours: { mon: 'Zamknięte', tue: '12:00-21:00', wed: '12:00-21:00', thu: '12:00-21:00', fri: '12:00-23:00', sat: '12:00-23:00', sun: '12:00-20:00' },
+          menu: [
+            { id: 'm10-1', name: 'Kubełek Stripsów Chrupiących (10 szt.)', desc: 'Polędwiczki z piersi kurczaka w złocistej chrupiącej panierce z dwoma sosami do wyboru.', price: 34, cat: 'Kurczak', tag: 'Hit nr 1' },
+            { id: 'm10-2', name: 'Połówka Kurczaka z Rożna z Frytkami', desc: 'Soczysty kurczak pieczony na obrotowym rożnie ze złocistą skórką, porcja frytek.', price: 28, cat: 'Kurczak' },
+            { id: 'm10-3', name: 'Crispy Chicken Burger', desc: 'Chrupiący filet w bułce z sezamem, sałata lodowa, ogórek konserwowy, sos majonezowy.', price: 22, cat: 'Burgery' }
+          ]
+        },
+        {
+          id: 'rest-11',
+          name: 'Zapiekanki Rogoźno',
+          slug: 'zapiekanki-rogozno',
+          desc: 'Kultowe, 45-centymetrowe zapiekanki z pieca na rogozińskim Rynku. Świeże pieczarki, roztopiona gouda i tradycyjny sos.',
+          cuisines: ['Zapiekanki', 'Street Food'],
+          phone: '451 003 112',
+          address: 'Plac Karola Marcinkowskiego, Rogoźno',
+          minOrder: 20,
+          deliveryFee: 0,
+          time: '15-25 min',
+          hasDelivery: false,
+          hasTakeaway: true,
+          rating: 4.9,
+          reviews: 289,
+          badge: 'Rogoziński Rynek 4.9 ⭐',
+          hours: { mon: '12:00-20:00', tue: '12:00-20:00', wed: '12:00-20:00', thu: '12:00-20:00', fri: '12:00-20:00', sat: '12:00-20:00', sun: '12:00-20:00' },
+          menu: [
+            { id: 'm11-1', name: 'Zapiekanka Tradycyjna z Pieczarkami (45 cm)', desc: 'Chrupiąca bagietka, autorski duszony farsz pieczarkowy, polski ser gouda, ketchup.', price: 18, cat: 'Zapiekanki', tag: 'Bestseller' },
+            { id: 'm11-2', name: 'Zapiekanka Góralska ze Szynką i Żurawiną', desc: 'Duszony farsz, ser, wędzona szynka, starty oscypek, podawana z żurawiną leśną.', price: 22, cat: 'Zapiekanki' }
+          ]
+        },
+        {
+          id: 'rest-12',
+          name: 'Shoarma Szejka',
+          slug: 'shoarma-szejka',
+          desc: 'Aromatyczna shoarma i kebab z doskonale przyprawionym mięsem prosto z rożna. Wybitna ocena 4.8.',
+          cuisines: ['Kebab', 'Fast Food'],
+          phone: '459 179 393',
+          address: 'osiedle Przemysława II 7d, Rogoźno',
+          minOrder: 25,
+          deliveryFee: 0,
+          time: '20-30 min',
+          hasDelivery: false,
+          hasTakeaway: true,
+          rating: 4.8,
+          reviews: 36,
+          badge: 'Shoarma & Grill',
+          hours: { mon: '09:00-19:00', tue: '12:00-19:00', wed: '12:00-19:00', thu: '12:00-19:00', fri: '12:00-20:00', sat: '12:00-20:00', sun: 'Zamknięte' },
+          menu: [
+            { id: 'm12-1', name: 'Talerz Shoarma Szejka', desc: 'Duża porcja marynowanego mięsa z rożna, frytki lub ryż basmati, zestaw surówek, sos arabski.', price: 33, cat: 'Kebab', tag: 'Specjał' },
+            { id: 'm12-2', name: 'Shoarma w Chlebku Arabskim', desc: 'Chlebek arabski pita, soczyste mięso, świeże warzywa, łagodny sos czosnkowy.', price: 24, cat: 'Kebab' }
+          ]
+        },
+        {
+          id: 'rest-13',
+          name: 'Saray Kebab Rogoźno',
+          slug: 'saray-kebab',
+          desc: 'Kebab z dowozem do domu. Kapsalony z zapiekanym serem gouda, cienkie lawasze i chrupiące frytki.',
+          cuisines: ['Kebab', 'Fast Food'],
+          phone: '730 997 062',
+          address: 'osiedle Przemysława II 2, Rogoźno',
+          minOrder: 25,
+          deliveryFee: 5,
+          time: '25-40 min',
+          hasDelivery: true,
+          hasTakeaway: true,
+          rating: 4.3,
+          reviews: 69,
+          badge: 'Z Dowozem',
+          hours: { mon: 'Zamknięte', tue: '11:00-22:00', wed: '11:00-22:00', thu: '11:00-22:00', fri: '11:00-23:00', sat: '11:00-23:00', sun: '12:00-22:00' },
+          menu: [
+            { id: 'm13-1', name: 'Kebab Rollo Saray (Duży)', desc: 'Cienki chleb lawasz, opiekane mięso wołowo-drobiowe, świeże warzywa, sos mieszany.', price: 26, cat: 'Kebab', tag: 'Popularne' },
+            { id: 'm13-2', name: 'Kapsalon Saray z Serem Gouda', desc: 'Warstwa frytek, soczyste mięso, zapieczony ser gouda, surówka i sos czosnkowy.', price: 32, cat: 'Kebab', tag: 'Mega porcja' }
+          ]
+        },
+        {
+          id: 'rest-14',
+          name: 'Fast Kebab',
+          slug: 'fast-kebab',
+          desc: 'Kebab w centrum Rogoźna, otwarty do późnych godzin nocnych. Ponad 380 opinii.',
+          cuisines: ['Kebab', 'Fast Food'],
+          phone: '577 799 677',
+          address: 'Wielka Poznańska 28, Rogoźno',
+          minOrder: 25,
+          deliveryFee: 0,
+          time: '15-25 min',
+          hasDelivery: false,
+          hasTakeaway: true,
+          rating: 4.1,
+          reviews: 388,
+          badge: 'Otwarte do późna',
+          hours: { mon: '10:00-24:00', tue: '10:00-24:00', wed: '10:00-24:00', thu: '10:00-24:00', fri: '10:00-01:00', sat: '10:00-01:00', sun: '10:00-24:00' },
+          menu: [
+            { id: 'm14-1', name: 'Fast Kebab w Chrupkiej Picie', desc: 'Świeża pita, opiekane mięso, kapusta pekińska, pomidor, ogórek kiszony, sos ostry.', price: 23, cat: 'Kebab' },
+            { id: 'm14-2', name: 'Mega Kebab Rollo Gigant', desc: 'Ponad 50 cm rollo z podwójną porcją mięsa dla największego głodu.', price: 34, cat: 'Kebab', tag: 'Gigant' }
+          ]
+        },
+        {
+          id: 'rest-15',
+          name: 'MAYBEST KEBAB & BURGER',
+          slug: 'maybest-kebab-burger',
+          desc: 'Kebab, burgery wołowe i frytki z dowozem oraz okienkiem Drive-thru przy ulicy Kościuszki.',
+          cuisines: ['Kebab', 'Burgery', 'Fast Food'],
+          phone: '885 574 423',
+          address: 'Kościuszki 49a, Rogoźno',
+          minOrder: 30,
+          deliveryFee: 5,
+          time: '25-40 min',
+          hasDelivery: true,
+          hasTakeaway: true,
+          rating: 3.7,
+          reviews: 166,
+          badge: 'Drive-Thru',
+          hours: { mon: '10:00-22:00', tue: '10:00-22:00', wed: '10:00-22:00', thu: '10:00-22:00', fri: '10:00-22:00', sat: '10:00-22:00', sun: '10:00-22:00' },
+          menu: [
+            { id: 'm15-1', name: 'Maybest Kebab w Bułce z Serem', desc: 'Opiekane mięso kebab, stopiony cheddar, świeże warzywa, sos czosnkowo-pikantny.', price: 26, cat: 'Kebab' },
+            { id: 'm15-2', name: 'Maybest Burger Wołowy z Bekonem', desc: 'Wołowina 150g, chrupiący bekon, sałata, plaster pomidora, sos BBQ.', price: 29, cat: 'Burgery' },
+            { id: 'm15-3', name: 'Kapsalon Maybest z Serem', desc: 'Zapiekana porcja frytek z mięsem kebab, serem gouda i sosem tatarskim.', price: 31, cat: 'Kebab' }
+          ]
+        }
+      ];
+
+      // STORE
+      let RESTAURANTS = (() => {
+        try {
+          const stored = localStorage.getItem('rogozno_restaurants_v3');
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          }
+        } catch (e) {}
+        return RESTAURANTS_INITIAL;
+      })();
+
+      function saveStore() {
+        localStorage.setItem('rogozno_restaurants_v3', JSON.stringify(RESTAURANTS));
+      }
+
+      // STATE
+      let currentView = 'list'; // 'list' | 'edit' | 'backup'
+      let selectedRestId = RESTAURANTS[0]?.id || null;
+      let isCreatingNew = false;
+      let editingDishId = null;
+      let isAddingNewDish = false;
+
+      function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const el = document.createElement('div');
+        el.className = `toast-msg flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-xl text-xs font-bold text-white transition-all backdrop-blur-md ${
+          type === 'info' ? 'bg-slate-900/95 border border-slate-700' : 'bg-brand-900/95 border border-brand-700/60'
+        }`;
+        el.innerHTML = `
+          <div class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+            <i data-lucide="${type === 'info' ? 'info' : 'check'}" class="w-3.5 h-3.5 text-white"></i>
+          </div>
+          <span>${message}</span>
+        `;
+        container.appendChild(el);
+        lucide.createIcons();
+
+        setTimeout(() => {
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(10px) scale(0.95)';
+          setTimeout(() => el.remove(), 250);
+        }, 2200);
+      }
+
+      function updateNavTabs() {
+        document.getElementById('nav-count').innerText = RESTAURANTS.length;
+        
+        ['list', 'edit', 'backup'].forEach(view => {
+          const btn = document.getElementById('nav-' + view);
+          if (!btn) return;
+          if (currentView === view) {
+            btn.className = 'nav-tab px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-slate-900 text-white shadow-xs';
+          } else {
+            btn.className = 'nav-tab px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100';
+          }
+        });
+
+        const activeRest = RESTAURANTS.find(r => r.id === selectedRestId);
+        const editLabel = document.getElementById('nav-edit-label');
+        if (editLabel) {
+          editLabel.innerText = isCreatingNew ? 'Nowy lokal' : (activeRest ? 'Edycja: ' + activeRest.name : 'Szczegóły lokalu');
+        }
+      }
+
+      function setView(view) {
+        currentView = view;
+        render();
+      }
+
+      function openEditView(id) {
+        selectedRestId = id;
+        isCreatingNew = false;
+        currentView = 'edit';
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function openNewRestView() {
+        isCreatingNew = true;
+        selectedRestId = null;
+        currentView = 'edit';
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function render() {
+        updateNavTabs();
+        const root = document.getElementById('admin-root');
+        if (!root) return;
+
+        if (currentView === 'list') {
+          root.innerHTML = renderListView();
+        } else if (currentView === 'edit') {
+          root.innerHTML = renderEditView();
+        } else if (currentView === 'backup') {
+          root.innerHTML = renderBackupView();
+        }
+
+        lucide.createIcons();
+      }
+
+      // 1. LIST VIEW
+      function renderListView() {
+        return `
+          <div class="space-y-6">
+            <!-- Header bar -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-3xl border border-slate-200 shadow-2xs">
+              <div>
+                <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Katalog lokali w Rogoźnie</h1>
+                <p class="text-xs text-slate-500 mt-1">Kliknij dowolny lokal, aby przejść do pełnej edycji jego parametrów, godzin i menu.</p>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button onclick="openNewRestView()" class="px-4 py-2.5 rounded-xl bg-brand-800 hover:bg-brand-900 text-white font-bold text-xs flex items-center gap-2 shadow-xs transition">
+                  <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                  <span>Dodaj nowy lokal</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Restaurant Table / Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              ${RESTAURANTS.map((r, idx) => `
+                <div class="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-brand-200 transition-all flex flex-col justify-between group">
+                  <div class="space-y-3">
+                    <div class="flex items-start justify-between gap-2">
+                      <div>
+                        <div class="flex items-center gap-1.5 mb-1">
+                          <span class="w-5 h-5 rounded-md bg-slate-100 text-slate-600 flex items-center justify-center text-[10px] font-black">${idx + 1}</span>
+                          ${r.badge ? `<span class="px-2 py-0.5 rounded-md bg-brand-50 text-brand-800 text-[10px] font-bold">${r.badge}</span>` : ''}
+                        </div>
+                        <h3 class="font-extrabold text-base text-slate-900 group-hover:text-brand-800 transition leading-snug">${r.name}</h3>
+                      </div>
+                      <span class="px-2 py-1 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-black shrink-0">⭐ ${r.rating}</span>
+                    </div>
+
+                    <div class="space-y-1 text-xs text-slate-500">
+                      <p class="flex items-center gap-1.5">
+                        <i data-lucide="phone" class="w-3.5 h-3.5 text-slate-400"></i>
+                        <strong class="text-slate-800">${r.phone}</strong>
+                      </p>
+                      <p class="flex items-center gap-1.5 truncate">
+                        <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                        <span class="truncate">${r.address}</span>
+                      </p>
+                      <p class="flex items-center gap-1.5">
+                        <i data-lucide="utensils" class="w-3.5 h-3.5 text-slate-400"></i>
+                        <span>${r.cuisines.join(', ')}</span>
+                      </p>
+                    </div>
+
+                    <!-- Parametry -->
+                    <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100 grid grid-cols-3 gap-2 text-center text-[11px]">
+                      <div>
+                        <span class="block text-slate-400 text-[9px] uppercase font-bold">Min.</span>
+                        <strong class="text-slate-800 font-extrabold">${r.minOrder} zł</strong>
+                      </div>
+                      <div>
+                        <span class="block text-slate-400 text-[9px] uppercase font-bold">Dowóz</span>
+                        <strong class="text-slate-800 font-extrabold">${r.hasDelivery ? r.deliveryFee + ' zł' : 'Brak'}</strong>
+                      </div>
+                      <div>
+                        <span class="block text-slate-400 text-[9px] uppercase font-bold">Pozycje</span>
+                        <strong class="text-brand-800 font-extrabold">${r.menu.length} dań</strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                    <button onclick="openEditView('${r.id}')" class="flex-1 py-2 px-3 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition flex items-center justify-center gap-1.5">
+                      <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+                      <span>Edytuj szczegóły</span>
+                    </button>
+                    <button onclick="deleteRestaurant('${r.id}')" class="p-2 rounded-xl text-slate-400 hover:text-red-700 hover:bg-red-50 transition" title="Usuń lokal">
+                      <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      // 2. DETAILED EDIT VIEW (FULL PAGE)
+      function renderEditView() {
+        const rest = isCreatingNew ? null : RESTAURANTS.find(r => r.id === selectedRestId);
+        if (!rest && !isCreatingNew) {
+          return `
+            <div class="bg-white p-10 rounded-3xl text-center border border-slate-200">
+              <p class="text-slate-500 text-sm">Wybierz lokal z listy, aby edytować jego szczegóły.</p>
+              <button onclick="setView('list')" class="mt-3 px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold">Przejdź do listy lokali</button>
+            </div>
+          `;
+        }
+
+        const days = [
+          { key: 'mon', label: 'Poniedziałek' },
+          { key: 'tue', label: 'Wtorek' },
+          { key: 'wed', label: 'Środa' },
+          { key: 'thu', label: 'Czwartek' },
+          { key: 'fri', label: 'Piątek' },
+          { key: 'sat', label: 'Sobota' },
+          { key: 'sun', label: 'Niedziela' },
+        ];
+
+        return `
+          <div class="space-y-6">
+            <!-- Header bar with quick actions -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-5 rounded-3xl border border-slate-200 shadow-2xs">
+              <div class="flex items-center gap-3">
+                <button onclick="setView('list')" class="p-2 rounded-xl hover:bg-slate-100 text-slate-600">
+                  <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                </button>
+                <div>
+                  <h1 class="text-xl sm:text-2xl font-black text-slate-900">${isCreatingNew ? 'Dodawanie nowego lokalu do bazy' : 'Edycja: ' + rest.name}</h1>
+                  <p class="text-xs text-slate-500">Zarządzaj danymi kontaktowymi, godzinami otwarcia oraz pozycjami w menu.</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 self-end sm:self-center">
+                <button type="button" onclick="setView('list')" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 transition">
+                  Anuluj
+                </button>
+                <button type="button" onclick="submitRestaurantFullForm()" class="px-5 py-2.5 rounded-xl bg-brand-800 hover:bg-brand-900 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md shadow-brand-900/20 active:scale-95 transition">
+                  <i data-lucide="save" class="w-4 h-4"></i>
+                  <span>Zapisz wszystkie zmiany</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Form Body: 2 Columns Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              
+              <!-- Left Column: Details & Hours -->
+              <div class="lg:col-span-2 space-y-6">
+                <!-- 1. Podstawowe dane -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-2xs space-y-4">
+                  <h3 class="font-black text-sm uppercase tracking-wider text-slate-900 flex items-center gap-2">
+                    <i data-lucide="store" class="w-4 h-4 text-brand-800"></i>
+                    <span>Podstawowe informacje o lokalu</span>
+                  </h3>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                    <div>
+                      <label class="block font-bold text-slate-700 mb-1">Pełna nazwa restauracji / baru *</label>
+                      <input id="edit-name" type="text" value="${rest ? rest.name : ''}" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 focus:outline-none" />
+                    </div>
+
+                    <div>
+                      <label class="block font-bold text-slate-700 mb-1">Numer telefonu do zamówień SMS *</label>
+                      <input id="edit-phone" type="text" value="${rest ? rest.phone : ''}" placeholder="np. 723 200 344" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 focus:outline-none" />
+                    </div>
+
+                    <div class="sm:col-span-2">
+                      <label class="block font-bold text-slate-700 mb-1">Dokładny adres w Rogoźnie *</label>
+                      <input id="edit-address" type="text" value="${rest ? rest.address : ''}" placeholder="np. plac Powstańców Wlkp. 16, 64-610 Rogoźno" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 focus:outline-none" />
+                    </div>
+
+                    <div>
+                      <label class="block font-bold text-slate-700 mb-1">Kategorie kuchni (rozdziel przecinkami)</label>
+                      <input id="edit-cuisines" type="text" value="${rest ? rest.cuisines.join(', ') : 'Obiady, Fast Food'}" placeholder="np. Obiady, Pizza, Burgery" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 focus:outline-none" />
+                    </div>
+
+                    <div>
+                      <label class="block font-bold text-slate-700 mb-1">Etykieta promocyjna (np. Bestseller, 100% Wołowina)</label>
+                      <input id="edit-badge" type="text" value="${rest ? (rest.badge || '') : ''}" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 focus:outline-none" />
+                    </div>
+
+                    <div class="sm:col-span-2">
+                      <label class="block font-bold text-slate-700 mb-1">Opis lokalu (widoczny dla klientów)</label>
+                      <textarea id="edit-desc" rows="2" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 focus:outline-none">${rest ? rest.desc : ''}</textarea>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 2. Parametry dostawy i ocen -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-2xs space-y-4">
+                  <h3 class="font-black text-sm uppercase tracking-wider text-slate-900 flex items-center gap-2">
+                    <i data-lucide="truck" class="w-4 h-4 text-brand-800"></i>
+                    <span>Dostawa, czas i oceny Google</span>
+                  </h3>
+
+                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+                    <div>
+                      <label class="block font-bold text-slate-700 mb-1">Min. zamówienie (zł)</label>
+                      <input id="edit-min" type="number" min="0" value="${rest ? rest.minOrder : 30}" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none" />
+                    </div>
+                    <div>
+                      <label class="block font-bold text-slate-700 mb-1">Koszt dowozu (zł)</label>
+                      <input id="edit-fee" type="number" min="0" value="${rest ? rest.deliveryFee : 5}" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none" />
+                    </div>
+                    <div>
+                      <label class="block font-bold text-slate-700 mb-1">Średni czas</label>
+                      <input id="edit-time" type="text" value="${rest ? rest.time : '30-45 min'}" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none" />
+                    </div>
+                    <div>
+                      <label class="block font-bold text-slate-700 mb-1">Ocena Google</label>
+                      <input id="edit-rating" type="number" step="0.1" min="1" max="5" value="${rest ? rest.rating : 4.5}" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none" />
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-6 pt-2">
+                    <label class="inline-flex items-center gap-2 cursor-pointer font-bold text-xs">
+                      <input id="edit-has-del" type="checkbox" ${rest && rest.hasDelivery ? 'checked' : (isCreatingNew ? 'checked' : '')} class="w-4 h-4 rounded text-brand-800" />
+                      <span>Obsługuje dowóz do klienta</span>
+                    </label>
+                    <label class="inline-flex items-center gap-2 cursor-pointer font-bold text-xs">
+                      <input id="edit-has-take" type="checkbox" ${rest && rest.hasTakeaway ? 'checked' : (isCreatingNew ? 'checked' : '')} class="w-4 h-4 rounded text-brand-800" />
+                      <span>Obsługuje odbiór osobisty</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- 3. Godziny otwarcia (Wszystkie 7 dni) -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-2xs space-y-4">
+                  <div class="flex items-center justify-between">
+                    <h3 class="font-black text-sm uppercase tracking-wider text-slate-900 flex items-center gap-2">
+                      <i data-lucide="clock" class="w-4 h-4 text-brand-800"></i>
+                      <span>Godziny otwarcia w poszczególne dni</span>
+                    </h3>
+                    <span class="text-[11px] text-slate-400">Wpisz np. 12:00-21:00 lub Zamknięte</span>
+                  </div>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    ${days.map(d => {
+                      const val = rest && rest.hours ? (rest.hours[d.key] || '12:00-21:00') : '12:00-21:00';
+                      return `
+                        <div class="flex items-center justify-between gap-2 p-2.5 bg-slate-50 rounded-2xl border border-slate-100">
+                          <span class="font-bold text-slate-700 w-28 shrink-0">${d.label}:</span>
+                          <input id="hour-${d.key}" type="text" value="${val}" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs font-mono bg-white focus:outline-none" />
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Column: Menu dań lokalu -->
+              <div class="space-y-6">
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-2xs space-y-4">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3 class="font-black text-sm uppercase tracking-wider text-slate-900 flex items-center gap-2">
+                        <i data-lucide="book-open" class="w-4 h-4 text-brand-800"></i>
+                        <span>Pozycje w menu</span>
+                      </h3>
+                      <p class="text-[11px] text-slate-400">Dania serwowane przez ten lokal</p>
+                    </div>
+
+                    ${rest ? `
+                      <button type="button" onclick="openAddDishForm('${rest.id}')" class="px-3 py-1.5 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-900 font-bold text-xs flex items-center gap-1 transition">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        <span>+ Dodaj danie</span>
+                      </button>
+                    ` : ''}
+                  </div>
+
+                  ${!rest ? `
+                    <div class="p-6 text-center text-xs text-slate-400 bg-slate-50 rounded-2xl">
+                      Najpierw zapisz podstawowe dane lokalu, aby móc dodawać potrawy do menu.
+                    </div>
+                  ` : (rest.menu.length === 0 ? `
+                    <div class="p-6 text-center text-xs text-slate-500 bg-slate-50 rounded-2xl">
+                      Lokal nie ma jeszcze żadnych dań. Kliknij powyższy przycisk "+ Dodaj danie".
+                    </div>
+                  ` : `
+                    <div class="space-y-2.5 max-h-[600px] overflow-y-auto pr-1">
+                      ${rest.menu.map(item => `
+                        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 flex items-start justify-between gap-2 hover:bg-slate-100/80 transition">
+                          <div class="flex-1 pr-2">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                              <h5 class="font-extrabold text-xs text-slate-900 leading-snug">${item.name}</h5>
+                              <span class="text-[10px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded border border-slate-200">${item.cat || 'Danie'}</span>
+                              ${item.tag ? `<span class="text-[10px] font-bold text-brand-800 bg-brand-50 px-1.5 py-0.5 rounded">${item.tag}</span>` : ''}
+                            </div>
+                            <p class="text-[11px] text-slate-500 mt-0.5 line-clamp-2">${item.desc || ''}</p>
+                            <span class="text-xs font-black text-slate-900 mt-1 block">${item.price} zł</span>
+                          </div>
+
+                          <div class="flex items-center gap-1 shrink-0">
+                            <button type="button" onclick="openEditDishForm('${rest.id}', '${item.id}')" class="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700" title="Edytuj danie">
+                              <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <button type="button" onclick="deleteDish('${rest.id}', '${item.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-red-700 hover:bg-red-50" title="Usuń danie">
+                              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
+                          </div>
+                        </div>
+                      `).join('')}
+                    </div>
+                  `)}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dish Submodal -->
+          ${editingDishId || isAddingNewDish ? renderDishModal() : ''}
+        `;
+      }
+
+      // 3. BACKUP AND DATABASE VIEW
+      function renderBackupView() {
+        const jsonStr = JSON.stringify(RESTAURANTS, null, 2);
+
+        return `
+          <div class="space-y-6">
+            <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-2xs">
+              <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Kopia zapasowa i baza danych</h1>
+              <p class="text-xs text-slate-500 mt-1">Pobieraj kopię zapasową lokali, wgrywaj nowe dane lub przywróć bazę do pierwotnych 15 restauracji z Rogoźna.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="bg-white p-6 rounded-3xl border border-slate-200 space-y-3">
+                <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-700">
+                  <i data-lucide="download" class="w-5 h-5"></i>
+                </div>
+                <h3 class="font-extrabold text-sm text-slate-900">Eksportuj do pliku JSON</h3>
+                <p class="text-xs text-slate-500">Pobierz pełną bazę wszystkich restauracji, menu i godzin na dysk.</p>
+                <button onclick="downloadBackupJSON()" class="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-xs flex items-center justify-center gap-2">
+                  <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                  <span>Pobierz rogozno_je_katalog.json</span>
+                </button>
+              </div>
+
+              <div class="bg-white p-6 rounded-3xl border border-slate-200 space-y-3">
+                <div class="w-10 h-10 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-700">
+                  <i data-lucide="upload" class="w-5 h-5"></i>
+                </div>
+                <h3 class="font-extrabold text-sm text-slate-900">Importuj dane z pliku</h3>
+                <p class="text-xs text-slate-500">Wgraj przygotowany plik JSON, aby natychmiast zaktualizować całą bazę.</p>
+                <label class="w-full py-2.5 px-4 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 font-bold text-xs flex items-center justify-center gap-2 cursor-pointer">
+                  <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                  <span>Wybierz plik JSON</span>
+                  <input type="file" accept=".json" onchange="importJSONFile(event)" class="hidden" />
+                </label>
+              </div>
+
+              <div class="bg-white p-6 rounded-3xl border border-slate-200 space-y-3">
+                <div class="w-10 h-10 rounded-2xl bg-red-50 flex items-center justify-center text-red-700">
+                  <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                </div>
+                <h3 class="font-extrabold text-sm text-slate-900">Przywróć stan początkowy</h3>
+                <p class="text-xs text-slate-500">Resetuje wszystkie zmiany do oryginalnych 15 lokali z pliku CSV.</p>
+                <button onclick="resetToInitialCatalog()" class="w-full py-2.5 px-4 rounded-xl bg-red-800 hover:bg-red-900 text-white font-bold text-xs flex items-center justify-center gap-2">
+                  <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                  <span>Przywróć 15 lokali</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- JSON Preview Box -->
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="font-black text-sm text-slate-900">Podgląd kodu bazy JSON (${RESTAURANTS.length} lokali):</h3>
+                <button onclick="copyCatalogJSON()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1.5">
+                  <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                  <span>Kopiuj do schowka</span>
+                </button>
+              </div>
+              <textarea readonly class="w-full h-80 p-4 font-mono text-xs bg-slate-900 text-emerald-400 rounded-2xl border border-slate-800 overflow-y-auto leading-relaxed">${jsonStr}</textarea>
+            </div>
+          </div>
+        `;
+      }
+
+      // DISH EDIT MODAL
+      function renderDishModal() {
+        const rest = RESTAURANTS.find(r => r.id === selectedRestId);
+        const dish = isAddingNewDish ? null : rest?.menu.find(m => m.id === editingDishId);
+
+        return `
+          <div class="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+            <div class="w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <h3 class="font-black text-base text-slate-900">${isAddingNewDish ? 'Nowa pozycja w menu' : 'Edytuj danie'}</h3>
+                <button onclick="editingDishId = null; isAddingNewDish = false; render();" class="p-1 text-slate-400 hover:text-slate-700">
+                  <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+              </div>
+
+              <form onsubmit="event.preventDefault(); submitDishForm();" class="space-y-3 text-xs">
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1">Nazwa potrawy *</label>
+                  <input id="dish-name" type="text" value="${dish ? dish.name : ''}" required class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-brand-800" />
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block font-bold text-slate-700 mb-1">Cena (zł) *</label>
+                    <input id="dish-price" type="number" step="0.5" min="1" value="${dish ? dish.price : 25}" required class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-brand-800" />
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-700 mb-1">Kategoria</label>
+                    <input id="dish-cat" type="text" value="${dish ? (dish.cat || 'Obiady') : 'Obiady'}" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-brand-800" />
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1">Etykieta (np. Bestseller, Ostre)</label>
+                  <input id="dish-tag" type="text" value="${dish ? (dish.tag || '') : ''}" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-brand-800" />
+                </div>
+
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1">Składniki i opis</label>
+                  <textarea id="dish-desc" rows="3" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-brand-800">${dish ? dish.desc : ''}</textarea>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                  <button type="button" onclick="editingDishId = null; isAddingNewDish = false; render();" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 font-bold">Anuluj</button>
+                  <button type="submit" class="px-5 py-2 rounded-xl bg-brand-800 text-white font-bold hover:bg-brand-900">Zapisz danie</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        `;
+      }
+
+      // ACTIONS
+      function submitRestaurantFullForm() {
+        const name = (document.getElementById('edit-name')?.value || '').trim();
+        const phone = (document.getElementById('edit-phone')?.value || '').trim();
+        const address = (document.getElementById('edit-address')?.value || '').trim();
+        const cuisines = (document.getElementById('edit-cuisines')?.value || '').split(',').map(s => s.trim()).filter(Boolean);
+        const badge = (document.getElementById('edit-badge')?.value || '').trim();
+        const desc = (document.getElementById('edit-desc')?.value || '').trim();
+        const minOrder = parseFloat(document.getElementById('edit-min')?.value || '30');
+        const deliveryFee = parseFloat(document.getElementById('edit-fee')?.value || '5');
+        const time = (document.getElementById('edit-time')?.value || '30-45 min').trim();
+        const rating = parseFloat(document.getElementById('edit-rating')?.value || '4.5');
+        const hasDelivery = document.getElementById('edit-has-del')?.checked ?? true;
+        const hasTakeaway = document.getElementById('edit-has-take')?.checked ?? true;
+
+        if (!name || !phone || !address) {
+          showToast('Wypełnij nazwę, telefon i adres lokalu!', 'info');
+          return;
+        }
+
+        const hours = {
+          mon: document.getElementById('hour-mon')?.value || '12:00-21:00',
+          tue: document.getElementById('hour-tue')?.value || '12:00-21:00',
+          wed: document.getElementById('hour-wed')?.value || '12:00-21:00',
+          thu: document.getElementById('hour-thu')?.value || '12:00-21:00',
+          fri: document.getElementById('hour-fri')?.value || '12:00-22:00',
+          sat: document.getElementById('hour-sat')?.value || '12:00-22:00',
+          sun: document.getElementById('hour-sun')?.value || '12:00-20:00',
+        };
+
+        if (isCreatingNew) {
+          const newId = 'rest-' + Date.now();
+          const newRest = {
+            id: newId,
+            name,
+            slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+            phone,
+            address,
+            cuisines: cuisines.length > 0 ? cuisines : ['Obiady'],
+            minOrder,
+            deliveryFee,
+            time,
+            rating,
+            reviews: 1,
+            hasDelivery,
+            hasTakeaway,
+            badge,
+            desc,
+            hours,
+            menu: []
+          };
+          RESTAURANTS.push(newRest);
+          selectedRestId = newId;
+          isCreatingNew = false;
+          showToast('Dodano nowy lokal: ' + name);
+        } else {
+          const rest = RESTAURANTS.find(r => r.id === selectedRestId);
+          if (rest) {
+            rest.name = name;
+            rest.phone = phone;
+            rest.address = address;
+            rest.cuisines = cuisines.length > 0 ? cuisines : rest.cuisines;
+            rest.badge = badge;
+            rest.desc = desc;
+            rest.minOrder = minOrder;
+            rest.deliveryFee = deliveryFee;
+            rest.time = time;
+            rest.rating = rating;
+            rest.hasDelivery = hasDelivery;
+            rest.hasTakeaway = hasTakeaway;
+            rest.hours = hours;
+            showToast('Zapisano zmiany dla ' + name);
+          }
+        }
+
+        saveStore();
+        render();
+      }
+
+      function deleteRestaurant(id) {
+        const rest = RESTAURANTS.find(r => r.id === id);
+        if (!rest) return;
+        if (!confirm('Czy na pewno chcesz bezpowrotnie usunąć lokal "' + rest.name + '" z bazy?')) return;
+
+        RESTAURANTS = RESTAURANTS.filter(r => r.id !== id);
+        if (selectedRestId === id) selectedRestId = RESTAURANTS[0]?.id || null;
+        saveStore();
+        showToast('Usunięto lokal ' + rest.name);
+        render();
+      }
+
+      function openAddDishForm(restId) {
+        selectedRestId = restId;
+        isAddingNewDish = true;
+        editingDishId = null;
+        render();
+      }
+
+      function openEditDishForm(restId, dishId) {
+        selectedRestId = restId;
+        isAddingNewDish = false;
+        editingDishId = dishId;
+        render();
+      }
+
+      function submitDishForm() {
+        const rest = RESTAURANTS.find(r => r.id === selectedRestId);
+        if (!rest) return;
+
+        const name = (document.getElementById('dish-name')?.value || '').trim();
+        const price = parseFloat(document.getElementById('dish-price')?.value || '25');
+        const cat = (document.getElementById('dish-cat')?.value || 'Obiady').trim();
+        const tag = (document.getElementById('dish-tag')?.value || '').trim();
+        const desc = (document.getElementById('dish-desc')?.value || '').trim();
+
+        if (!name || isNaN(price)) {
+          showToast('Podaj nazwę i poprawną cenę!', 'info');
+          return;
+        }
+
+        if (isAddingNewDish) {
+          const newDishId = 'd-' + Date.now();
+          rest.menu.push({ id: newDishId, name, price, cat, tag, desc });
+          showToast('Dodano: ' + name);
+        } else {
+          const dish = rest.menu.find(m => m.id === editingDishId);
+          if (dish) {
+            dish.name = name;
+            dish.price = price;
+            dish.cat = cat;
+            dish.tag = tag;
+            dish.desc = desc;
+            showToast('Zaktualizowano danie: ' + name);
+          }
+        }
+
+        saveStore();
+        editingDishId = null;
+        isAddingNewDish = false;
+        render();
+      }
+
+      function deleteDish(restId, dishId) {
+        const rest = RESTAURANTS.find(r => r.id === restId);
+        if (!rest) return;
+        const dish = rest.menu.find(m => m.id === dishId);
+        if (!dish) return;
+        if (!confirm('Usunąć danie "' + dish.name + '"?')) return;
+
+        rest.menu = rest.menu.filter(m => m.id !== dishId);
+        saveStore();
+        showToast('Usunięto: ' + dish.name);
+        render();
+      }
+
+      function downloadBackupJSON() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(RESTAURANTS, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", "rogozno_je_katalog.json");
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+        showToast('Pobrano plik rogozno_je_katalog.json');
+      }
+
+      function copyCatalogJSON() {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(JSON.stringify(RESTAURANTS, null, 2))
+            .then(() => showToast('Skopiowano kod JSON do schowka!'));
+        }
+      }
+
+      function importJSONFile(event) {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const data = JSON.parse(e.target.result);
+            if (Array.isArray(data) && data.length > 0) {
+              RESTAURANTS = data;
+              saveStore();
+              selectedRestId = RESTAURANTS[0]?.id;
+              showToast('Zaimportowano ' + data.length + ' lokali!');
+              render();
+            } else {
+              showToast('Niepoprawny format pliku JSON!', 'info');
+            }
+          } catch (err) {
+            showToast('Błąd parsowania pliku JSON!', 'info');
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      function resetToInitialCatalog() {
+        if (!confirm('Czy na pewno chcesz przywrócić oryginalne 15 restauracji z Rogoźna? Spowoduje to nadpisanie obecnych danych.')) return;
+        RESTAURANTS = JSON.parse(JSON.stringify(RESTAURANTS_INITIAL));
+        saveStore();
+        selectedRestId = RESTAURANTS[0]?.id;
+        showToast('Przywrócono 15 oryginalnych lokali!');
+        render();
+      }
+
+      // INITIAL LOAD
+      window.addEventListener('DOMContentLoaded', () => {
+        render();
+      });
+      render();
+    </script>
+  </body>
+</html>
