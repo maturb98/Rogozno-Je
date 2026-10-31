@@ -146,7 +146,7 @@
           name: 'Restauracja Dom Smaków',
           slug: 'restauracja-dom-smakow',
           desc: 'Kuchnia polska, chrupiąca pizza i domowe dania obiadowe z szybkim dowozem na terenie całego Rogoźna.',
-          cuisines: ['Obiady', 'Pizza', 'Polska'],
+          cuisines: ['Obiady', 'Pizza', 'Burgery', 'Makarony', 'Polska'],
           phone: '723 200 344',
           address: 'Fabryczna 7/J, Rogoźno',
           minOrder: 35,
@@ -159,10 +159,95 @@
           badge: 'Klasyk Rogoźna',
           hours: { mon: '12:00-21:00', tue: '12:00-21:00', wed: '12:00-21:00', thu: '12:00-21:00', fri: '12:00-23:00', sat: '12:00-23:00', sun: '12:00-20:00' },
           menu: [
-            { id: 'm1-1', name: 'Kotlet Schabowy z Ziemniakami i Kapustą', desc: 'Duży, tradycyjny schabowy smażony na złoto, tłuczone ziemniaki z koperkiem, zasmażana kapusta.', price: 32, cat: 'Obiady', tag: 'Bestseller' },
-            { id: 'm1-2', name: 'Filet z Kurczaka w Ziołach', desc: 'Soczysta pierś z kurczaka z grilla, złociste frytki, zestaw świeżych surówek.', price: 30, cat: 'Obiady' },
-            { id: 'm1-3', name: 'Pizza Dom Smaków (32 cm)', desc: 'Sos pomidorowy, ser mozzarella, szynka, pieczarki, kukurydza, papryka, oregano.', price: 34, cat: 'Pizza', tag: 'Polecane' },
-            { id: 'm1-4', name: 'Żurek Staropolski z Jajkiem i Kiełbasą', desc: 'Domowy zakwas żytni, wędzona biała kiełbasa, majeranek, ugotowane jajko wiejskie.', price: 16, cat: 'Zupy' }
+            // DANIA GŁÓWNE
+            { id: 'ds-g1', name: 'Tradycyjny Kotlet Schabowy lub Drobiowy', desc: 'Podawany ze złocistymi frytkami oraz zestawem świeżych surówek.', price: 30, cat: 'Dania Główne', tag: 'Klasyk' },
+            { id: 'ds-g2', name: 'Kotlet Schabowy Zapiekany z Serem i Pieczarkami', desc: 'Soczysty schabowy zapieczony pod kołderką sera i pieczarek, ziemniaczki wedges, surówka.', price: 32, cat: 'Dania Główne', tag: 'Bestseller' },
+            { id: 'ds-g3', name: 'Kotlet De Volaille z Masłem', desc: 'Klasyczny De Volaille z płynnym masełkiem, aksamitne purée ziemniaczane, surówka.', price: 33, cat: 'Dania Główne', tag: 'Hit' },
+            { id: 'ds-g4', name: 'Shoarma Drobiowa z Frytkami', desc: 'Aromatycznie przyprawione kawałki drobiu z frytkami, świeżą sałatką i sosem.', price: 32, cat: 'Dania Główne' },
+            { id: 'ds-g5', name: 'Roladka Drobiowa po Włosku', desc: 'Zawijana z mozzarellą i suszonymi pomidorami w kremowym sosie śmietanowym, puree ziemniaczane, sałatka.', price: 36, cat: 'Dania Główne', tag: 'Polecane' },
+            { id: 'ds-g6', name: 'Filet z Kurczaka z Grilla z Salsą', desc: 'Grillowana pierś drobiowa, chrupiące frytki, świeża sałatka oraz salsa pomidorowa.', price: 34, cat: 'Dania Główne' },
+            { id: 'ds-g7', name: 'Filet z Kurczaka w Sosie Borowikowym', desc: 'Delikatny filet w szlachetnym sosie z leśnych borowików, pieczone ziemniaki, sałatka.', price: 37, cat: 'Dania Główne' },
+            { id: 'ds-g8', name: 'Polędwiczki Wieprzowe w Sosie Kurkowym', desc: 'Kruche medaliony wieprzowe w sosie ze złocistych kurek leśnych, pieczone ziemniaki, sałatka.', price: 37, cat: 'Dania Główne', tag: 'Specjalność' },
+            { id: 'ds-g9', name: 'Tradycyjna Pieczeń z Karkówki', desc: 'Długo pieczona karkówka z sosem pieczeniowym, ziemniaki puree, zasmażane buraczki.', price: 36, cat: 'Dania Główne' },
+            { id: 'ds-g10', name: 'Żeberka w Glazurze BBQ', desc: 'Miękkie, soczyste żeberka wieprzowe glazurowane sosem BBQ, grube frytki belgijskie, sałatka.', price: 39, cat: 'Dania Główne', tag: 'Bestseller' },
+            { id: 'ds-g11', name: 'Tradycyjny Zraz Wieprzowy', desc: 'Klasyczny zawijany zraz w gęstym sosie własnym, ziemniaki puree, zasmażana kapusta.', price: 39, cat: 'Dania Główne' },
+            { id: 'ds-g12', name: 'Soczysta Karkówka z Grilla', desc: 'Pieczone ziemniaczki, sałatka z kiszonego ogórka i pomidora, sos.', price: 37, cat: 'Dania Główne' },
+            { id: 'ds-g13', name: 'Kieszonka Drobiowa z Pieczarkami i Serem', desc: 'W kremowym sosie pieczarkowym, ziemniaczki puree, zestaw surówek.', price: 37, cat: 'Dania Główne' },
+            { id: 'ds-g14', name: 'Stek Wieprzowy z Grilla', desc: 'Grube frytki belgijskie, świeża sałatka, sos autorski.', price: 39, cat: 'Dania Główne' },
+
+            // RYBY
+            { id: 'ds-r1', name: 'Łosoś z Pieca z Warzywami', desc: 'Pieczony filet z łososia, sypka kasza kuskus, gotowane warzywa.', price: 40, cat: 'Ryby', tag: 'Fit' },
+            { id: 'ds-r2', name: 'Dorsz w Chrupiącym Cieście', desc: 'Złocisty filet dorsza, grube frytki belgijskie, sałatka, domowy sos tatarski.', price: 40, cat: 'Ryby', tag: 'Bestseller' },
+            { id: 'ds-r3', name: 'Dorsz z Pieca w Sosie Koperkowym', desc: 'Delikatny dorsz pieczony, aksamitne purée ziemniaczane, gotowane warzywa.', price: 40, cat: 'Ryby' },
+
+            // BURGERY
+            { id: 'ds-b1', name: 'Burger Polak', desc: 'Chrupiący kurczak lub 100% wołowina, cheddar, sałata, pomidor, ogórek konserwowy, ketchup, majonez.', price: 26, cat: 'Burgery' },
+            { id: 'ds-b2', name: 'Burger Grek', desc: 'Soczysta wołowina, grillowany bekon, cheddar, jajo sadzone, sałata, ogórek kiszony, sos serowy, sos BBQ.', price: 28, cat: 'Burgery', tag: 'Popularny' },
+            { id: 'ds-b3', name: 'Burger Francuz', desc: '100% wołowina, bekon, panierowany camembert, prażona cebulka, sałata, ogórek konserwowy, aksamitny sos serowy.', price: 30, cat: 'Burgery', tag: 'Wyborny' },
+            { id: 'ds-b4', name: 'Burger Amerykanin', desc: 'Wołowina, bekon, cheddar, złociste krążki cebulowe, sałata, pomidor, ogórek konserwowy, sos koktajlowy.', price: 30, cat: 'Burgery', tag: 'Bestseller' },
+            { id: 'ds-b5', name: 'Burger Piekielny 🌶️🌶️🌶️', desc: 'Wołowina, bacon, placek ziemniaczany, ostre jalapeno, sałata, ogórek, sos Carolina Reaper.', price: 30, cat: 'Burgery', tag: 'Bardzo Ostre' },
+            { id: 'ds-b6', name: 'Burger Wiejski', desc: 'Wołowina, pikantne chorizo, pieczarki, cheddar, sałata, rzodkiewka, jalapeno, sos serowy, ketchup.', price: 30, cat: 'Burgery' },
+            { id: 'ds-b7', name: 'Burger Rybny', desc: 'Chrupiący dorsz w panierce, sałatka, surówka, ogórek konserwowy, domowa salsa, kremowy sos tatarski.', price: 30, cat: 'Burgery' },
+            { id: 'ds-b8', name: 'Burger Gigant (Podwójna Wołowina)', desc: '2x 180g wołowiny, 2x chrupiący placek ziemniaczany, konfitura z czerwonej cebuli, sos pieczarkowy, rzodkiewka, roszponka, rukola.', price: 40, cat: 'Burgery', tag: 'Mega Porcja' },
+            { id: 'ds-b9', name: 'Dodatek: Frytki Belgijskie (200g)', desc: 'Grube, dwukrotnie smażone chrupiące frytki belgijskie z solą morską.', price: 7, cat: 'Burgery' },
+            { id: 'ds-b10', name: 'Dodatek: Krążki Cebulowe (6 szt.)', desc: 'Złociste, chrupiące panierowane krążki cebulowe.', price: 6, cat: 'Burgery' },
+
+            // PIZZA (32 cm / 45 cm)
+            { id: 'ds-p1', name: 'Pizza 1. Margherita (32 cm)', desc: 'Sos pomidorowy, ser mozzarella, oregano. (Dostępna również duża 45 cm: 34 zł)', price: 22, cat: 'Pizza' },
+            { id: 'ds-p2', name: 'Pizza 2. Funghi (32 cm)', desc: 'Sos pomidorowy, ser mozzarella, świeże pieczarki. (Duża 45 cm: 37 zł)', price: 25, cat: 'Pizza' },
+            { id: 'ds-p3', name: 'Pizza 3. Prosciutto (32 cm)', desc: 'Sos pomidorowy, ser mozzarella, szynka. (Duża 45 cm: 40 zł)', price: 27, cat: 'Pizza' },
+            { id: 'ds-p4', name: 'Pizza 4. Capriciosa (32 cm)', desc: 'Sos pomidorowy, ser mozzarella, szynka, pieczarki. (Duża 45 cm: 44 zł)', price: 30, cat: 'Pizza', tag: 'Klasyk' },
+            { id: 'ds-p5', name: 'Pizza 5. Salame (32 cm)', desc: 'Sos pomidorowy, ser mozzarella, włoskie salami. (Duża 45 cm: 41 zł)', price: 28, cat: 'Pizza' },
+            { id: 'ds-p6', name: 'Pizza 6. Chorizo (32 cm)', desc: 'Sos pomidorowy, mozzarella, pikantne chorizo, konfitura ze słodkiej czerwonej cebuli, cheddar. (Duża 45 cm: 44 zł)', price: 30, cat: 'Pizza', tag: 'Polecane' },
+            { id: 'ds-p7', name: 'Pizza 7. Crudo e Rucola (32 cm)', desc: 'Sos pomidorowy, ser mozzarella, szynka parmeńska, świeża rukola, pomidorki, płatki parmezanu. (Duża 45 cm: 50 zł)', price: 34, cat: 'Pizza', tag: 'Premium' },
+            { id: 'ds-p8', name: 'Pizza 8. Formaggio 4 Sery (32 cm)', desc: 'Sos pomidorowy, mozzarella, wyrazisty camembert, lazur błękitny, ser feta. (Duża 45 cm: 46 zł)', price: 31, cat: 'Pizza' },
+            { id: 'ds-p9', name: 'Pizza 9. La Carne Mięsna (32 cm)', desc: 'Sos pomidorowy, ser mozzarella, kurczak, salami, kabanos, boczek, cebula. (Duża 45 cm: 47 zł)', price: 32, cat: 'Pizza', tag: 'Syta' },
+            { id: 'ds-p10', name: 'Pizza 10. Hawaii (32 cm)', desc: 'Sos pomidorowy, ser mozzarella, szynka, soczysty ananas. (Duża 45 cm: 44 zł)', price: 30, cat: 'Pizza' },
+            { id: 'ds-p11', name: 'Pizza 11. Mafia (32 cm)', desc: 'Sos pomidorowy, mozzarella, szynka, kurczak, pieczarki, papryka, cebula. (Duża 45 cm: 46 zł)', price: 31, cat: 'Pizza' },
+            { id: 'ds-p12', name: 'Pizza 12. Wegetariana (32 cm)', desc: 'Sos pomidorowy, mozzarella, pieczarki, brokuł, kukurydza, świeży pomidor, szczypiorek. (Duża 45 cm: 44 zł)', price: 30, cat: 'Pizza', tag: 'Wege' },
+            { id: 'ds-p13', name: 'Pizza 13. Mexicana 🌶️ (32 cm)', desc: 'Sos pomidorowy, mozzarella, boczek, chorizo, kurczak, jalapeno, czerwona cebula, kukurydza, sos BBQ. (Duża 45 cm: 50 zł)', price: 34, cat: 'Pizza', tag: 'Ostra' },
+            { id: 'ds-p14', name: 'Pizza 14. Prima (32 cm)', desc: 'Sos pomidorowy, mozzarella, kurczak, pieczarki, camembert, chrupiąca prażona cebulka. (Duża 45 cm: 50 zł)', price: 34, cat: 'Pizza' },
+            { id: 'ds-p15', name: 'Pizza 15. Marco (32 cm)', desc: 'Sos pomidorowy, mozzarella, nuggetsy drobiowe, świeża sałata, pomidor, ogórek, prażona cebulka, sos czosnkowy. (Duża 45 cm: 50 zł)', price: 34, cat: 'Pizza', tag: 'Hit' },
+            { id: 'ds-p16', name: 'Pizza 16. Village Wiejska (32 cm)', desc: 'Kremowy sos serowy, mozzarella, swojska kiełbasa, boczek, ogórek kiszony, szczypiorek. (Duża 45 cm: 52 zł)', price: 35, cat: 'Pizza' },
+            { id: 'ds-p17', name: 'Pizza 17. Paolo (32 cm)', desc: 'Aksamitny sos serowy, mozzarella, grillowany kurczak, świeży szpinak, ser sałatkowy. (Duża 45 cm: 46 zł)', price: 35, cat: 'Pizza' },
+            { id: 'ds-p18', name: 'Pizza 18. Milano (32 cm)', desc: 'Sos pomidorowy, ser mozzarella, salami, camembert, pomidor, świeżo wyciśnięty czosnek, cebula. (Duża 45 cm: 46 zł)', price: 31, cat: 'Pizza' },
+            { id: 'ds-p19', name: 'Pizza 19. India (32 cm)', desc: 'Sos pomidorowy, mozzarella, kurczak, warzywa grillowane, sos sweet-chilli. (Duża 45 cm: 50 zł)', price: 34, cat: 'Pizza' },
+            { id: 'ds-p20', name: 'Pizza 20. Diavolo 🌶️🌶️🌶️ (32 cm)', desc: 'Sos Carolina Reaper, mozzarella, kiełbasa, pikantne chorizo, pieczarki, puszyste piri piri, cebula. (Duża 45 cm: 52 zł)', price: 35, cat: 'Pizza', tag: 'Piekielna' },
+
+            // MAKARONY & ZAPIEKANKI
+            { id: 'ds-m1', name: 'Spaghetti Bolognese', desc: 'Klasyczny sos mięsno-pomidorowy z ziołami włoskimi i tartym serem.', price: 25, cat: 'Makarony', tag: 'Klasyk' },
+            { id: 'ds-m2', name: 'Spaghetti Carbonara', desc: 'Makaron spaghetti z chrupiącym boczkiem w sosie śmietanowo-jajecznym z pieprzem i parmezanem.', price: 25, cat: 'Makarony' },
+            { id: 'ds-m3', name: 'Spaghetti z Chorizo i Szpinakiem', desc: 'Pikantne chorizo, świeży szpinak, pieczarki w aromatycznym sosie orientalnym.', price: 30, cat: 'Makarony' },
+            { id: 'ds-m4', name: 'Spaghetti Aglio e Olio z Kurczakiem', desc: 'Oliwa z oliwek extra virgin, świeży czosnek, natka pietruszki, kurczak (dostępne również z krewetkami +6 zł).', price: 26, cat: 'Makarony' },
+            { id: 'ds-m5', name: 'Tagliatelle w Sosie Truflowo-Grzybowym', desc: 'Wstążki tagliatelle, kawałki kurczaka, kurki, pasta truflowa w aksamitnym sosie śmietanowym.', price: 32, cat: 'Makarony', tag: 'Bestseller' },
+            { id: 'ds-m6', name: 'Tagliatelle z Krewetkami i Pomidorami', desc: 'Krewetki podsmażane z suszonymi pomidorami w sosie śmietanowo-winnym.', price: 32, cat: 'Makarony', tag: 'Polecane' },
+            { id: 'ds-m7', name: 'Tagliatelle ze Szpinakiem i Kurczakiem', desc: 'Szpinak, kurczak (lub łosoś +4 zł), suszone pomidory w sosie śmietanowym.', price: 30, cat: 'Makarony' },
+            { id: 'ds-m8', name: 'Tagliatelle z Brokułami i Kurczakiem', desc: 'Różyczki brokuła, soczysty kurczak w delikatnym kremowym sosie śmietanowym.', price: 30, cat: 'Makarony' },
+            { id: 'ds-m9', name: 'Gnocchi z Polędwiczką i Warzywami', desc: 'Włoskie gnocchi, polędwiczka wieprzowa, chrupiące warzywa, sos sweet-chilli.', price: 30, cat: 'Makarony' },
+            { id: 'ds-m10', name: 'Gnocchi z Polędwiczką i Borowikami', desc: 'Gnocchi z polędwiczką wieprzową i szlachetnymi leśnymi borowikami w sosie śmietanowym.', price: 30, cat: 'Makarony', tag: 'Wyborne' },
+            { id: 'ds-m11', name: 'Zapiekanka Farmerska z Pieca 🌶️', desc: 'Makaron penne, szynka, chrupiący boczek, kabanos, cebula, nuta chilli, sos pomidorowy, ser.', price: 30, cat: 'Makarony', tag: 'Pikantna' },
+            { id: 'ds-m12', name: 'Zapiekanka Ogrodowa z Pieca', desc: 'Makaron penne, kurczak, kolorowa papryka, cukinia, pieczarki, kukurydza, sos koperkowy, ser.', price: 30, cat: 'Makarony' },
+            { id: 'ds-m13', name: 'Zapiekanka Chorizo z Pieca', desc: 'Makaron penne, pikantne chorizo, kurczak, cukinia, pieczarki, cebula, czosnek, sos pomidorowy, ser.', price: 30, cat: 'Makarony' },
+            { id: 'ds-m14', name: 'Zapiekanka Diabelska z Ryżem 🌶️', desc: 'Sypki ryż, kurczak, papryka, cukinia, brokuł, cebula, czosnek, chilli, zapieczony ser.', price: 30, cat: 'Makarony', tag: 'Ostra' },
+            { id: 'ds-m15', name: 'Zapiekanka Leśna z Ryżem i Truflą', desc: 'Ryż, polędwiczka, kurki, borowiki, cebula, pasta truflowa, sos śmietanowy, zapieczony ser.', price: 30, cat: 'Makarony', tag: 'Wykwintna' },
+
+            // DESERY
+            { id: 'ds-d1', name: 'Domowy Jabłecznik na Ciepło', desc: 'Podawany na ciepło z aksamitnym sosem toffi, gałką lodów waniliowych i bitą śmietaną.', price: 18, cat: 'Desery', tag: 'Bestseller' },
+            { id: 'ds-d2', name: 'Ciasto Czekoladowe z Musem Malinowym', desc: 'Ciepłe ciasto z intensywnej czekolady, owocowy mus malinowy, gałka lodów, bita śmietana.', price: 18, cat: 'Desery' },
+            { id: 'ds-d3', name: 'Gorące Maliny z Lodami Waniliowymi', desc: 'Owoce malin na gorąco podawane z gałkami lodów waniliowych i bitą śmietaną.', price: 18, cat: 'Desery' },
+
+            // NAPOJE & KAWA
+            { id: 'ds-n1', name: 'Sok Tymbark 0,2l', desc: 'Do wyboru: Jabłko, Pomarańcza, Czarna Porzeczka lub Multiwitamina.', price: 8, cat: 'Napoje' },
+            { id: 'ds-n2', name: 'Lipton Ice Tea 0,2l', desc: 'Orzeźwiająca herbata mrożona brzoskwiniowa lub cytrynowa.', price: 9, cat: 'Napoje' },
+            { id: 'ds-n3', name: 'Pepsi / Mirinda / 7UP 0,2l', desc: 'Schłodzony napój gazowany w butelce szklanej.', price: 9, cat: 'Napoje' },
+            { id: 'ds-n4', name: 'Kawa Klasyczna / z Mlekiem', desc: 'Świeżo parzona aromatyczna kawa czarna lub z aksamitnym mlekiem.', price: 10, cat: 'Napoje' },
+            { id: 'ds-n5', name: 'Kawa Caffe Latte / Cappuccino', desc: 'Aromatyczna kawa z puszystym spienionym mlekiem.', price: 13, cat: 'Napoje' },
+            { id: 'ds-n6', name: 'Kawa Espresso', desc: 'Intensywne, włoskie espresso z gęstą cremą.', price: 11, cat: 'Napoje' },
+
+            // PIWA & ALKOHOLE
+            { id: 'ds-al1', name: 'Piwo Lech Pils 0,5l (lane z kija)', desc: 'Świeże, zimne piwo lane (dostępne również 0,3l za 10 zł).', price: 12, cat: 'Napoje' },
+            { id: 'ds-al2', name: 'Piwo Butelkowe 0,5l (Książęce / Tyskie / Kozel)', desc: 'Książęce Pszeniczne (14 zł), Książęce IPA (14 zł), Kozel Cerny (13 zł), Tyskie (12 zł), Lech Premium (12 zł).', price: 13, cat: 'Napoje' },
+            { id: 'ds-al3', name: 'Piwo Bezalkoholowe Lech Free 0,5l', desc: 'Klasyczne lub owocowe smaki piwa 0,0%.', price: 12, cat: 'Napoje' }
           ]
         },
         {
@@ -484,7 +569,7 @@
       // STORE
       let RESTAURANTS = (() => {
         try {
-          const stored = localStorage.getItem('rogozno_restaurants_v3');
+          const stored = localStorage.getItem('rogozno_restaurants_v4');
           if (stored) {
             const parsed = JSON.parse(stored);
             if (Array.isArray(parsed) && parsed.length > 0) return parsed;
@@ -494,7 +579,7 @@
       })();
 
       function saveStore() {
-        localStorage.setItem('rogozno_restaurants_v3', JSON.stringify(RESTAURANTS));
+        localStorage.setItem('rogozno_restaurants_v4', JSON.stringify(RESTAURANTS));
       }
 
       // STATE
